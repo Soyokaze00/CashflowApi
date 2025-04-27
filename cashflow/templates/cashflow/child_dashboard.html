@@ -1,0 +1,659 @@
+{% load static %} {% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts-community.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+              Yellow: "#fca311",
+              Gray: "#353535",
+            },
+            fontFamily: {
+              lemon: ["lemon"],
+              Material: ["Material Symbols Outlined"],
+            },
+          },
+        },
+      };
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@10.3.3/dist/umd/ag-charts-enterprise.js"
+      type="module"
+    ></script>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Harmattan:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Lemon&family=Lexend+Exa:wght@100..900&family=Marhey:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Scheherazade+New:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+              Yellow: "#fca311",
+              Gray: "#353535",
+            },
+            fontFamily: {
+              lemon: ["lemon"],
+              error: ["error"],
+              title: ["title"],
+              messiri: ["El Messiri"],
+            },
+          },
+        },
+      };
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+
+    <style media="">
+      body,
+      span {
+        font-family: "El Messiri";
+      }
+      p {
+        font-family: "El Messiri";
+      }
+      div {
+        font-family: "El Messiri";
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "El Messiri";
+      }
+      @layer base {
+        @font-face {
+          font-family: "El Messiri";
+          font-style: normal;
+          font-weight: 400;
+          font-display: swap;
+          src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+        }
+      }
+      .progress-bar-container {
+        width: 100%;
+        height: 15px;
+        background-color: #e0e0e0;
+        border: 1px solid black;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-bar {
+        height: 100%;
+        background-color: #ffd100;
+
+        border-radius: 10px;
+        transition: width 0.3s ease-in-out;
+      }
+      .progress-bar[data-progress="100"] {
+        border-radius: 10px;
+      }
+      .progress-bar[data-progress]:not([data-progress="100"]) {
+        border-radius: 10px 0 0 10px;
+      }
+      :root {
+        --button-background-color: transparent;
+        --button-text-color: #212529;
+        --button-color-border-primary: #d0d5dd;
+        --button-hover-background-color: rgba(0, 0, 0, 0.1);
+        --select-chevron: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23182230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 9L12 15L18 9"/></svg>');
+
+        overflow: hidden;
+        font-family: -apple-system, "system-ui", "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji";
+      }
+
+      :root[data-dark-mode="false"] {
+        background: #192232;
+      }
+
+      :root[data-dark-mode="true"] {
+        --button-text-color: #f8f9fa;
+        --button-color-border-primary: rgb(255, 255, 255);
+        --button-hover-background-color: #2a343e;
+        --select-chevron: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 9L12 15L18 9"/></svg>');
+
+        background: #192232;
+        color: white;
+      }
+
+      :root,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: grid;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#eeeeee] overflow-hidden">
+    <div dir="" class="flex">
+      <div class="flex-1">
+        <div
+          dir="rtl"
+          class="header h-[70px] z-40 bg-white px-5 sticky top-0 flex justify-between items-center text-[20px] font-[40px]"
+        >
+          <p class="text-[28px]">داشبورد</p>
+          <!-- <div>
+            <div class="icon">
+              <span class="material-symbols-outlined text-[50px]">
+                account_circle
+              </span>
+            </div>
+            <div class="buttton"></div>
+          </div> -->
+        </div>
+        <div class="flex mt-4">
+          <div
+            class="bg-[#353535] rounded-[30px] w-[25%] h-[85vh] ml-3 flex justify-center py-5 px-3"
+          >
+            <div class="" dir="rtl">
+              <h1 class="text-[25px] pt-3 pb-8 text-white text-center font-">
+                نکته های روز
+              </h1>
+              <div class="text-white">
+                <div class="flex items-center leading-[1.7rem] mb-8">
+                  <span class="ml-4 material-symbols-outlined text-Yellow">
+                    check_circle
+                  </span>
+                  <p class="text-[13px]">
+                    "هر هدفی که داری، اونو به مراحل کوچک‌تر تقسیم کن تا به راحتی
+                    به اون برسی"🤩
+                  </p>
+                </div>
+                <div class="flex items-center leading-[1.7rem] mb-8">
+                  <span class="ml-4 material-symbols-outlined text-Yellow">
+                    check_circle
+                  </span>
+                  <p class="text-[13px]">
+                    "سعی کن هر ماه مقداری از پولت رو پس‌انداز کنی. این کار به تو
+                    امنیت مالی میده"😄
+                  </p>
+                </div>
+                <div class="flex items-center leading-[1.7rem] mb-8">
+                  <span class="ml-4 material-symbols-outlined text-Yellow">
+                    check_circle
+                  </span>
+                  <p class="text-[13px]">
+                    "قبل از خرید، از خودت بپرس: آیا این چیز برای من ضروریه یا
+                    فقط می‌خوامش؟" 🤔
+                  </p>
+                </div>
+                <div class="flex items-center leading-[1.7rem] mb-8">
+                  <span class="ml-4 material-symbols-outlined text-Yellow">
+                    check_circle
+                  </span>
+                  <p class="text-[13px]">
+                    "حواست باشه که پول تنها برای خرید نیست. شاید بهتر باشه بعضی
+                    از پولت رو برای چیزهایی که توی آینده به کمکت میاد،
+                    سرمایه‌گذاری کنی"😎
+                  </p>
+                </div>
+                {% comment %}
+                <div class="flex items-center leading-[1.7rem] mb-8">
+                  <span class="ml-4 material-symbols-outlined text-Yellow">
+                    check_circle
+                  </span>
+                  <p class="text-[15px]">
+                    "قبل از خرید همیشه بررسی کن که چه هزینه‌های اضافی وجود داره.
+                    این کمک می‌کنه که از خریدهای غیرمنتظره جلوگیری کنی"😉
+                  </p>
+                </div>
+                {% endcomment %}
+              </div>
+              <div class="flex items-center justify-center">
+                {% comment %}
+                <button
+                  type="submit"
+                  name="add_goal"
+                  class="btn btn-primary bg-[#FCA311] font-bold rounded-[10px] py-[8px] px-12 my-2"
+                >
+                  افزودن هدف
+                </button>
+                {% endcomment %}
+              </div>
+            </div>
+          </div>
+          <div class="flex-1 mr-2" dir="rtl">
+            <div class="flex justify-evenly mb-3">
+              <div
+                dir="rtl"
+                class="bg-[#ffffff] border-[3px] border-[#353535] mx-2 rounded-[30px] w-[35%] h-[50vh]"
+              >
+                <div class="title text-center mt-5">مقدار خرج</div>
+                <div class="flex items-center justify-center">
+                  <div class="w-[100%]">
+                    <div
+                      class="w-[100%] h-[70px] justify-center my-4 text-white flex"
+                    >
+                      <div
+                        class="rounded-full bg-[#353535] w-[88%] flex justify-start items-center"
+                      >
+                        <div
+                          class="rounded-full border-[3px] bg-[#353535] border-[#FCA311] w-[30%] h-[100%] flex items-center justify-center"
+                        >
+                          امروز
+                        </div>
+                        <p class="mr-[35px]">
+                          {{ daily_total|floatformat:2 }}t
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="w-[100%] h-[70px] justify-center my-4 text-white flex"
+                    >
+                      <div
+                        class="rounded-full bg-[#353535] w-[88%] flex justify-start items-center"
+                      >
+                        <div
+                          class="rounded-full border-[3px] bg-[#353535] border-[#FCA311] w-[30%] h-[100%] flex items-center justify-center"
+                        >
+                          این هفته
+                        </div>
+                        <p class="mr-[35px]">
+                          {{ weekly_total|floatformat:2 }}t
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="w-[100%] h-[70px] justify-center my-4 text-white flex"
+                    >
+                      <div
+                        class="rounded-full bg-[#353535] w-[88%] flex justify-start items-center"
+                      >
+                        <div
+                          class="rounded-full border-[3px] bg-[#353535] border-[#FCA311] w-[30%] h-[100%] flex items-center justify-center"
+                        >
+                          این ماه
+                        </div>
+                        <p class="mr-[35px]">
+                          {{ monthly_total|floatformat:2 }}t
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="w-[30%] md:w-[40%]" dir="ltr">
+                <!-- <div id="chartContainer" style="height: 300px; width: 100%;border-radius: 30px;overflow: hidden;background-color: #212529;"></div> -->
+
+                <div
+                  dir="ltr"
+                  class="bg-[#353535] rounded-[30px] overflow-hidden h-[30vh] md:h-[50vh]"
+                  id="myChart"
+                ></div>
+              </div>
+              <div
+                dir="rtl"
+                class="bg-[#ffffff] border-[3px] border-[#353535] lack overflow-hidden mx-2 rounded-[30px] w-[35%] h-[50vh]"
+              >
+                <div>
+                  {% if recent_costs %}
+                  <div class="flex items-center justify-center pt-5">
+                    <span class="material-symbols-outlined text-Yellow">
+                      receipt_long
+                    </span>
+                    <h1 class="text-center">تراکنش های اخیر</h1>
+                  </div>
+                  {% endif %}
+
+                  <ul class="px-5 py-3">
+                    {% for cost in recent_costs %}
+                    <li class="flex justify-between my-4">
+                      <div>{{ cost.get_cate_choices_display }}</div>
+                      <div class="flex items-center">
+                        <p>{{ cost.amount }}</p>
+                        <div
+                          class="icon material-symbols-outlined {% if cost.type == 'income' %} text-[#3c6c6f] {% else %}text-[#FFD100]{% endif %} mx-1"
+                        >
+                          {% if cost.type == 'income' %} trending_up {% else %}
+                          trending_down {% endif %}
+                        </div>
+                      </div>
+                    </li>
+                    {% empty %}
+                    <div
+                      class="flex justify-center items-center text-center px-4 mt-8"
+                    >
+                      <div>
+                        <span class="material-symbols-outlined text-[90px]"
+                          >wallet</span
+                        >
+                        <p class="text-black text-[20px] mt-3">
+                          هنوز تراکنشی وجود ندارد😊
+                        </p>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex justify-center my-2 bottom-0 h-[37%] overflow-hidden"
+            >
+              <div
+                class="bg-white rounded-[40px] w-[98.3%] flex justify-center items-center border-[3px] border-[#353535]"
+              >
+                <div
+                  class="Saves flex justify-between w-[100%] mx-8 items-center"
+                >
+                  {% for goal in top_goals %}
+                  <div class="saveBox text-center">
+                    <div class="flex justify-center my-2 text-[20px]" dir="ltr">
+                      <span class="text-gray-400"
+                        >{{goal.savings|intcomma}}T</span
+                      ><span>/{{goal.goal_amount|intcomma}}T</span>
+                    </div>
+
+                    <div class="mt-5 mb-[2.25rem]">
+                      <p class="text-[#FFD100] text-[20px] font-bold">
+                        {{goal.goal}}
+                      </p>
+                    </div>
+
+                    <div class="progress-bar-container my-2">
+                      <div
+                        class="progress-bar"
+                        style="width: {{ goal.progress_percentage }}%;"
+                      ></div>
+                    </div>
+                  </div>
+                  {% endfor %} {% if not top_goals %}
+                  <div
+                    class="flex flex-col items-center justify-center h-full w-full text-center"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[50px] text-[#FFD100] mb-8"
+                    >
+                      flag
+                    </span>
+                    <p>هنوز هدفی اضافه نشده است.</p>
+                  </div>
+
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        dir="rtl"
+        class="w-[16%] bg-[#D6D6D6] h-[100vh] sticky bottom-0 top-0 right-0 pt-2"
+      >
+        <div class="logo flex justify-center items-center">
+          <img src="{% static 'image/logo.png' %}" class="w-[150px]" alt="" />
+        </div>
+        <div class="grid grid-cols-1 place-content-between gap-20 h-[85%]">
+          <ul class="pt-10">
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  home
+                </span>
+              </div>
+              <a href="{% url 'child_dashboard' child.id %}">
+                <p class="text-[15px]">کارتابل</p>
+              </a>
+            </li>
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  app_registration
+                </span>
+              </div>
+              <a href="{% url 'costs' child.id %}">
+                <p class="text-[15px] cursor-pointer">ثبت هزینه</p>
+              </a>
+            </li>
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  query_stats
+                </span>
+              </div>
+              <a href="{% url 'details' child.id %}">
+                <p class="text-[15px] cursor-pointer">جزئیات خرج</p>
+              </a>
+            </li>
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  add_notes
+                </span>
+              </div>
+              <a href="{% url 'goals' child.id %}">
+                <p class="text-[15px] cursor-pointer">تعیین هدف</p>
+              </a>
+            </li>
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  price_check
+                </span>
+              </div>
+              <a href="{% url 'education' child.id %}">
+                <p class="text-[15px] cursor-pointer">آموزش</p>
+              </a>
+            </li>
+          </ul>
+          <ul class="bottom-0">
+            <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+              <div class="ml-4">
+                <span
+                  class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white"
+                >
+                  exit_to_app
+                </span>
+              </div>
+              <a href="{% url 'landing' %}">
+                <p class="text-[15px]">خروج</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts.min.js"></script>
+
+  <script>
+        document.addEventListener('DOMContentLoaded', () => {
+      const { AgCharts } = agCharts;
+
+      const categories = {{ categories|safe }};
+      const amount = {{ amount|safe }};
+      const income = {{ income|safe }};
+
+
+      if (!categories || !amount || categories.length !== amount.length) {
+        console.error("Data is missing or mismatched.");
+        return;
+      }
+
+      if (!categories.length || !amount.length ) {
+        document.getElementById("myChart").innerHTML = ` <div
+        class="flex justify-center items-center text-center px-4"
+        >
+        <div>
+
+        <span class="material-symbols-outlined text-[88px] text-white mt-12">
+        donut_small
+        </span>
+        <p  class="text-white text-[17px] mt-3" style="color:white;font-family:"El Messiri" ;text-align:center; margin-top: 50%;">
+        😣در این ماه هیچ داده ای برای نمایش وجود ندارد</p>
+        </div>
+
+        </div>`;
+        return;
+      }
+
+      const data = categories.map((category, index) => ({
+        type: category,
+        count: amount[index],
+        percentage: ((amount[index] / amount.reduce((sum, value) => sum + value, 0)) * 100).toFixed(0),
+      }));
+
+      const numFormatter = new Intl.NumberFormat("en-US");
+      const totalSpending = data.reduce((sum, d) => sum + d.count, 0);
+      const totalRemaining = income - totalSpending;
+      const overspending = Math.abs(totalRemaining);
+
+      const options = {
+        container: document.getElementById("myChart"),
+
+        data,
+
+        background: {
+          fill: "#353535",
+
+        },
+        series: [
+          {
+            type: "donut",
+            angleKey: "count",
+            calloutLabelKey: "type",
+            sectorLabelKey: "percentage",
+            sectorLabel: {
+            fontSize: 12,
+            fontFamily:"El Messiri",
+
+              color: "black",
+              formatter: ({ datum }) => `${datum.percentage}%`,
+            },
+            calloutLabel: {
+                    enabled: false,
+
+                },
+            innerRadiusRatio: 0.68,
+            innerLabels: [
+              {
+                text:  typeof income === "number" && income === 0
+                ? "مجموع هزینه ها"
+                : totalRemaining < 0
+                ? ":شما اینقدر بیشتر خرج کرده‌اید"
+                : "باقی مانده",
+                fontSize: 15,
+                fontFamily:"El Messiri",
+                color: "white",
+                textAlign: "center"
+              },
+              {
+                text: totalRemaining < 0
+                  ? `تومان ${numFormatter.format(overspending)}`
+                  : income > 0
+                  ? `تومان ${numFormatter.format(totalRemaining)}`
+                  : `تومان ${numFormatter.format(totalSpending)}`,
+                fontSize: 13,
+                spacing: 10,
+                fontFamily:"El Messiri",
+                color: "white",
+              },
+            ],
+                      fills: ['#a7a7a7', '#fba110', '#ffed32', '#a47012', "#ffce56", "#284B63"],
+
+
+            strokes: ["#FFFFFF"],
+            tooltip: {
+                    enabled: true,
+                    renderer: ({ datum }) => ({
+                        content: `${datum.type}: ${numFormatter.format(datum.count)} تومان`
+                    }),
+                },
+
+          },
+        ],
+        legend: {
+          position: "bottom",
+          item: {
+            label: {
+              color: "white",
+                          fontFamily:"El Messiri",
+
+            },
+          },
+        },
+      };
+
+      console.log("Chart options:", options);
+
+      AgCharts.create(options);
+    });
+  </script>
+
+  <!-- <script>
+  document.addEventListener("DOMContentLoaded", () => { });
+</script> -->
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@10.3.3/dist/umd/ag-charts-enterprise.js?t=1731495816075"></script>
+  {% comment %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% endcomment %} {% comment %}
+  <script src="{% static 'js/data.js' %}"></script>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% endcomment %} {% comment %}
+  <script src="{% static 'js/chart2.js' %}"></script>
+  {% endcomment %}
+  <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+</html>

@@ -1,0 +1,520 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Goals</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.css" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick-theme.css" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <script
+        src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: "#da373d",
+                        Yellow: "#fca311",
+                        Gray: "#353535",
+                    },
+                    fontFamily: {
+                        lemon: ["lemon"],
+                        error: ["error"],
+                        title: ["title"],
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+<style>
+    body {
+        font-family: "El Messiri";
+    }
+
+    p {
+        font-family: "El Messiri";
+    }
+
+    div {
+        font-family: "El Messiri";
+    }
+
+    h1 {
+        font-family: "El Messiri";
+    }
+
+    @layer base {
+        @font-face {
+            font-family: "El Messiri";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+        }
+    }
+
+    .slick-slider {
+        max-height: 156px;
+        width: 1000px !important;
+    }
+    /* .slick-list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    } */
+
+    .slick-track {
+        display: flex;
+        /* width: 1000px !important; */
+
+        justify-content: center;
+        max-height: 156px;
+        overflow: hidden;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+        color: #FCA311 !important;
+
+    }
+</style>
+<style>
+    .progress-container {
+        flex-grow: 1;
+        /*width: 80%;*/
+        border: 1px solid black;
+
+        background-color: #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        display: inline-block;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: #ffd100;
+        /* border: 2px solid black; */
+        border-radius: 10px;
+        transition: width 0.3s ease-in-out;
+
+        /* text-align: center;*/
+        /*line-height: 1rem; */
+        /* Ensures percentage text is vertically centered */
+
+        font-weight: bold;
+
+    }
+
+    .progress-bar[data-progress="100"] {
+        border-radius: 10px;
+    }
+
+    .progress-bar[data-progress]:not([data-progress="100"]) {
+        border-radius: 10px 0 0 10px;
+    }
+</style>
+
+<body class="bg-[#eeeeee] overflow-hidden">
+
+
+    <div dir="" class="flex">
+        <div class="flex-1">
+            <div dir="rtl"
+                class="header h-[65px] z-40 bg-white px-5 sticky top-0 flex justify-between items-center text-[20px] font-[40px]">
+                <p class="text-[28px]">داشبورد  {{ child.username }}☺️</p>
+
+                <!-- <div>
+                    <div class="icon">
+                        <span class="material-symbols-outlined text-[50px]">
+                            account_circle
+                        </span>
+                    </div>
+                    <div class="buttton"></div>
+                </div> -->
+            </div>
+
+
+            <div>
+                <div dir="rtl" class="font-bold mx-10 mt-2 flex
+               
+                ">
+                    <div class="">
+                        اهداف =>
+                    </div>
+                    <div class="text-[#FCA311]">
+                        {{ child.username }} 😊
+                    </div>
+                </div>
+
+                <div class="goals-list  text-center mx-5 flex justify-center
+                items-center
+                ">
+                    <div class="slider
+                    p-0
+                    max-h-[156px]
+                    max-w-[1000px]
+                    ">
+                        <!-- <h3>هدف شما</h3> -->
+                        {% for goal in goals %}
+                        <div class="
+                                goal-item text-center 
+                                {% if forloop.counter|divisibleby:3 %}bg-[#A9A9A9]{% elif forloop.counter|divisibleby:2 %}bg-white border-[3px] border-[#353535] {% else %}bg-[#353535] {% endif %}
+                                w-[300px] boxGoalList rounded-[40px] mx-5 my-2 p-1 h-36"> <!-- Display Goal Details -->
+                            <p>
+                            <div dir="ltr" class="flex text-center items-center justify-center text-[15px] my-3">
+                                <span
+                                    class="{% if forloop.counter|divisibleby:3 %}text-yellow-300{% else %}text-gray-400{% endif %}">
+                                    {{ goal.savings|intcomma }}</span>
+                                <span
+                                    class="{% if forloop.counter|divisibleby:3 %}text-black{% else %}text-[#FCA311]{% endif %}">
+                                    /{{ goal.goal_amount|intcomma }}
+                                </span>
+                            </div>
+
+                            <div
+                                class="text-center {% if forloop.counter|divisibleby:3 %}text-black{% else %}text-[#FCA311]{% endif %}">
+                                <strong>{{ goal.goal }}</strong>
+                            </div>
+                            </p>
+
+                            <div class="flex items-center justify-between my-2" dir="rtl">
+                                <div class="progress-container flex-1 bg-gray-300 rounded-full h-4 mr-2">
+                                    <div class="progress-bar h-4 rounded-full flex items-center justify-center text-black text-[10px]"
+                                        style="width: {{ goal.progress_percentage }}%; background-color: #FCA311;">
+                                        {{ goal.progress_percentage }}%
+                                    </div>
+                                </div>
+                                <form method="POST" class="delete-goal-form ">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_goal_id" value="{{ goal.id }}" />
+                                    <button type="submit" class="btn btn-danger text-[20px]
+                                        flex
+                                        items-center
+                                        justify-center
+                                        ">
+                                        <span class="material-symbols-outlined text-[#FCA311]">
+                                            close
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if goals|length == 0 %}
+                        <div
+                            class="flex items-center  w-[20%] rounded-[40px] mx-5 my-2 p-1 h-36 bg-[#353535] justify-center text-white ">
+                            <p>هنوز هدفی تعیین نشده است😣😿</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div>
+                    <div class="flex justify-evenly items-center" dir="rtl">
+                        <div
+                            class="flex items-center justify-center w-[40%] bg-white border-[3px] border-[#353535] rounded-[30px] h-[55vh] p-5">
+                            <form method="POST" dir="rtl" class="add-goal-form ">
+                                {% csrf_token %}
+                                <h3 class="text-center">افزودن هدف مالی</h3>
+
+                                <!-- Goal Name -->
+                                <div class="mb-1">
+                                    <div class="form-group">
+                                        <label for="id_goal" for="goal"
+                                            class="text-black absolute top-0 start-0 py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">
+                                            هدف
+
+                                        </label>
+                                        <input type="text" id="id_goal" name="goal"
+                                            class="form-control  w-[350px] peer py-4 px-0 block bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-black text-sm placeholder:text-gray-400 focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                                            value="{{ goal_form.goal.value|default:'' }}"
+                                            placeholder="هدف را وارد کنید" />
+                                        <small class="text-danger"> {{ goal_form.goal.errors|join:', ' }} </small>
+                                    </div>
+
+                                    <div class="form-group">
+
+                                        <input type="number" id="id_goal_amount" name="goal_amount"
+                                            value="{{ goal_form.goal_amount.value|default:'' }}"
+                                            placeholder="مقدار مورد نظر را وارد کنید"
+                                            class="form-control w-[350px] peer py-4 px-0 block bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-black text-sm placeholder:text-gray-400 focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2" />
+                                        <label for="id_goal_amount"
+                                            class="text-black absolute top-0 start-0 py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">مقدار
+                                            مورد نظر</label>
+                                        <small class="text-danger">
+                                            {{ goal_form.goal_amount.errors|join:', ' }}
+                                        </small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="id_savings"
+                                            class="text-black absolute top-0 start-0 py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">مقدار
+                                            فعلی</label>
+                                        <input type="number" id="id_savings" name="savings"
+                                            value="{{ goal_form.savings.value|default:'' }}"
+                                            placeholder="مقدار هدف فعلی را وارد کنید"
+                                            class="form-control w-[350px] peer py-4 px-0 block bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-black text-sm placeholder:text-gray-400 focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2" />
+                                        <small class="text-danger">
+                                            {{ goal_form.savings.errors|join:', ' }}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-center">
+                                    <button type="submit" name="add_goal"
+                                        class="btn btn-primary  bg-[#FCA311]   font-bold rounded-[10px] py-[8px] px-12 my-8">
+                                        افزودن هدف
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-[40%] bg-white border-[3px] border-[#353535] rounded-[30px] h-[55vh] p-5">
+
+                            <form method="POST" class="update-savings-form">
+                                {% csrf_token %}
+                                <h3 class="text-center my-5">آپدیت</h3>
+
+                                <!-- Select Goal -->
+                                <!-- Select Goal -->
+                                <div class="form-group">
+                                    <!-- <label for="goal_select">هدف </label> -->
+                                    <div class="flex items-center justify-center">
+                                        <select id="goal_select" name="edit_goal_id"
+                                            class="text-center border-orange-400 border-[3px] w-[50%] rounded-[15px] form-control mb-10">
+                                            <option value="">انتخاب هدف مالی</option>
+                                            {% for goal in goals %}
+                                            <option value="{{ goal.id }}" {% if goal_to_edit and goal_to_edit.id == goal.id %} selected {% else %} {% endif %}>
+                                                {{ goal.goal }}: {{ goal.savings }} از {{ goal.goal_amount }} ذخیره شده است.
+                                            </option>
+                                            
+
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <!-- Update Savings -->
+                                <div class="form-group">
+                                    <!-- <label for="id_savings">مقدار جدید</label> -->
+                                    <input type="number" id="id_savings" name="savings"
+                                        class="form-control w-[350px] peer py-4 px-0 block bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-black text-sm placeholder:text-gray-400 focus:border-t-transparent focus:border-x-transparent focus:border-b-blue-500 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                                        value="{{ update_form.savings.value|default:'' }}" placeholder="مقدار جدید"
+                                        class="form-control" />
+                                    <small class="text-danger">
+                                        {{ update_form.savings.errors|join:', ' }}
+                                    </small>
+                                </div>
+                                <pre>{{ update_form.errors }}</pre>
+
+                                <!-- Submit Button -->
+                                <div class="flex items-center justify-center">
+                                    <button type="submit" name="update_savings"
+                                        class="btn btn-success  bg-[#FCA311]  font-bold rounded-[10px] py-[8px] px-12 my-8">
+                                        ویرایش
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div
+        dir="rtl"
+        class="w-[16%] bg-[#D6D6D6] h-[100vh] sticky bottom-0 top-0 right-0 pt-2 "
+      >
+                <div class="logo flex justify-center items-center">
+                <img src="{% static 'image/logo.png' %}" alt="" class="w-[158px]" />
+
+            </div>
+            <div class="grid grid-cols-1 place-content-between   gap-20 h-[85%]">
+                <ul class="pt-10">
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                home
+                            </span>
+                        </div>
+                        <a href="{% url 'child_dashboard' child.id %}">
+                            <p class="text-[15px]">کارتابل</p>
+                        </a>
+                    </li>
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                app_registration
+                            </span>
+                        </div>
+                        <a href="{% url 'costs' child.id %}">
+                            <p class="text-[15px] cursor-pointer">ثبت هزینه</p>
+                        </a>
+                    </li>
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                query_stats
+                            </span>
+                        </div>
+                        <a href="{% url 'details' child.id %}">
+                        <p class="text-[15px]"> جزئیات خرج </p>
+                        </a>
+                    </li>
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                add_notes
+                            </span>
+                        </div>
+                        <a href="{% url 'goals' child.id %}">
+                            <p class="text-[15px] cursor-pointer">تعیین هدف</p>
+                        </a>
+                    </li>
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                price_check                </span>
+                        </div>
+                        <a href="{% url 'education' child.id %}">
+                          <p class="text-[15px] cursor-pointer">آموزش</p>
+                        </a>
+                      </li>
+                </ul>
+                <ul class="bottom-0">
+                   
+                    <li class="flex items-center hover:bg-[#bbbb] group py-2 px-[35px]">
+                        <div class="ml-4">
+                            <span class="material-symbols-outlined  text-[35px] text-Yellow group-hover:text-white">
+                                exit_to_app
+                            </span>
+                        </div>
+                        <a href="{% url 'landing' %}">
+                            <p class="text-[15px]">خروج</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+{% comment %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const chartData = JSON.parse('{{ chart_data|safe }}');
+
+        chartData.forEach((item, index) => {
+            const ctxSave = document.getElementById(`saveChart-${item.id}`).getContext('2d');
+
+            const gradient = ctxSave.createLinearGradient(0, 600, 0, 0);
+            gradient.addColorStop(0, '#fca311');
+            gradient.addColorStop(1, '#ffed32');
+
+            new Chart(ctxSave, {
+                type: 'bar',
+                data: {
+                    labels: [item.name],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [item.progress],
+                        backgroundColor: gradient,
+                        borderColor: "white",
+                        borderWidth: 3,
+                        borderRadius: 100,
+                        barPercentage: 0.6,
+                        categoryPercentage: 1.0,
+                        barThickness: 15
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, max: 100, grid: { display: false }, ticks: { display: false } },
+                        y: { grid: { display: false }, ticks: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'center',
+                            color: 'black',
+                            font: { size: 14, weight: 'bold' },
+                            formatter: (value) => `${value}%`
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    });
+
+
+</script> {% endcomment %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            autoplay: false,
+            autoplaySpeed: 3000,
+            responsive: [
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                }
+            ]
+        });
+    });
+</script>
+
+
+</html>

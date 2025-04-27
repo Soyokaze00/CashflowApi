@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Child Login</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,100,1,200&icon_names=favorite,home,search,settings" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=lock" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: "#da373d",
+            color3: "rgb(191 161 122 / 61%)",
+          },
+          fontFamily: {
+            lemon: ["lemon"],
+            error: ["error"],
+            title: ["title"],
+            messiri: ["messiri"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+
+input:-webkit-autofill {
+  /* background-color: red !important; 
+  color: #000 !important;           */
+  border-top: 1px solid #353535 !important;  
+  border-right: 1px solid #353535 !important; 
+  border-left: 1px solid #353535 !important;  
+ 
+  box-shadow: 0 0 0px 1000px #353535 inset !important; 
+}
+div , button {
+      font-family: "El Messiri";
+    }
+
+    @layer base {
+      @font-face {
+        font-family: "El Messiri";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#F2F2F2] flex justify-center items-center h-[100vh] overflow-hidden">
+  <div class="flex justify-between items-center w-[100%]" dir="">
+    <div dir="rtl"
+      class=" backdrop-blur-md bg-[#353535] h-[100vh] w-[50%] flex justify-center items-center">
+      <form method="post" class=" items-center grid gap-28" id="registrationForm">
+        {% csrf_token %}
+    
+        <div class="flex items-center justify-center text-[28px] font-bold text-[#fca311]">
+          ورود
+        </div>
+        <div class="grid gap-10">
+          <div>
+            <div class="flex items-end">
+                <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[8px]">email</span>
+                <div class="relative border-b-[3px] border-white w-[480px]">
+                    <input 
+                        type="email" 
+                        name="email"
+                        class="email w-[350px] text-white peer py-4 px-0 block border-none bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                        placeholder="لطفا ایمیل خود را وارد کنید"
+                        required
+                    />
+                    <label 
+                        for="email"
+                        class="absolute top-[-10px] start-0 py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0] text-white peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">
+                        ایمیل
+                    </label>
+                </div>
+            </div>
+            <p class="text-red-600 text-[12px] relative right-[50px] mt-4" id="emailError">
+                {% for error in form.email.errors %}{{ error }}{% endfor %}
+            </p>
+        </div>
+
+
+        <div>
+        <div class="flex items-center ">
+          <span class="material-icons text-[45px] text-[#fca311] relative top-[2px]">
+            lock
+          </span>
+          <div class="relative">
+            <div class="flex justify-between items-center border-b-[3px] border-white w-[480px]">
+          
+              <input type="password" name="password"
+                class="text-white  input  peer py-4 px-0  border-none bg-transparent border-t-transparent  border-b-transparent border-x-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:border-b-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:focus:border-b-transparent focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                placeholder="" />
+              <label for="password"
+                class="text-white top-[-10px] absolute  start-0 py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">رمز
+                عبور</label>
+  
+              <i class="material-icons iconEye cursor-pointer select-none text-[#fca311]">visibility_off</i>
+            </div>
+           
+          </div>
+          
+         
+        </div>
+        <div class="errors right-[50px] relative mt-4">
+          <p class="text-red-600  text-[12px]">
+            {% for error in form.password.errors %}{{ error }}{% endfor %}
+          </p>
+          {% if error %}
+          <p class="text-red-600 text-[12px]">{{ error }}</p>
+          {% endif %}
+        </div>
+      </div>
+        </div>
+
+       
+
+        <div class="flex items-center justify-center">
+          <button type="submit"
+          class="rounded-[18px] w-[187px] h-[58px] bg-[#fca311] text-[20px] font-bold py-[8px] px-12 ">
+          ورود
+          </button>
+        </div>
+      </form>
+    </div>
+    <div
+      class="flex justify-center items-senter w-[50%]">
+      <div class="grid gap-5">
+        <img src="{% static 'image/logo.png' %}" alt="" class="w-[407px]" />
+        <p dir="" class="flex items-center justify-center">
+          <a href="{% url 'parent_signup' %}" class="signup-link">
+            <span class="text-[#fca311]">ثبت‌نام در کش‌فلو</span>
+
+          </a>
+
+          <span>حساب کاربری ندارد؟</span>
+
+
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  const iconEye = document.querySelector(".iconEye");
+  const input = document.querySelector(".input");
+
+  iconEye.addEventListener("click", () => {
+    if (iconEye.textContent === "visibility") {
+      iconEye.textContent = "visibility_off";
+      input.type = "password";
+    } else {
+      iconEye.textContent = "visibility";
+      input.type = "text";
+    }
+  });
+</script>
+</html>

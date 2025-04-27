@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landing</title>
+    <link rel="stylesheet" href="index.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+              Yellow: "#FBE39D",
+              YellowText: "#F9D876",
+            },
+            fontFamily: {
+              lemon: ["lemon"],
+              error: ["error"],
+              title: ["title"],
+              messiri: ["El Messiri"],
+            },
+            animation: {
+              "spin-slow": "spin 3s linear infinite",
+              wiggle: "wiggle 3s ease-in-out ",
+              moving: "moving 1s linear ",
+              moving2: "moving 3s linear ",
+              linear: "linear 1s linear ",
+              flipInY: "flipInY 3s ",
+            },
+            keyframes: {
+              flipInY: {
+                "0%": {
+                  webkitTransform:
+                    "perspective(400px) rotate3d(0, 1, 0, 90deg)",
+                  transform: "perspective(400px) rotate3d(0, 1, 0, 90deg)",
+                  webkitTransitionTimingFunction: "ease-in",
+                  transitionTimingFunction: "ease-in",
+                  opacity: "0",
+                },
+                "40%": {
+                  webkitTransform:
+                    "perspective(400px) rotate3d(0, 1, 0, -20deg)",
+                  transform: "perspective(400px) rotate3d(0, 1, 0, -20deg)",
+                  webkitTransitionTimingFunction: "ease-in",
+                  transitionTimingFunction: " ease-in",
+                },
+                "60%": {
+                  webkitTransform:
+                    "perspective(400px) rotate3d(0, 1, 0, 10deg)",
+                  transform: "perspective(400px) rotate3d(0, 1, 0, 10deg)",
+                  opacity: " 1",
+                },
+                "80%": {
+                  webkitTransform:
+                    "perspective(400px) rotate3d(0, 1, 0, -5deg)",
+                  transform: "perspective(400px) rotate3d(0, 1, 0, -5deg)",
+                },
+                "100%": {
+                  webkitTransform: "perspective(400px)",
+                  transform: " perspective(400px)",
+                },
+              },
+              wiggle: {
+                "0%, 100%": { transform: "rotate(-3deg)" },
+                "50%": { transform: "rotate(3deg)" },
+              },
+              moving: {
+                "0%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-30px)" },
+                "100%": { transform: "translateY(0)" },
+              },
+              linear: {
+                "0%": {
+                  opacity: "0",
+                  webkiTtransform: " translateY(20px)",
+                  transform: "translateY(20px)",
+                },
+
+                "100%": {
+                  opacity: "1",
+                  webkitTransform: "translateY(0)",
+                  transform: "translateY(0)",
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-[#F2F2F2]">
+    <div dir="rtl">
+      <div
+        id=""
+        class="flex  top-0 py-5 justify-between items-center px-20 rounded-b-[30px] bg-[#F2F2F2]"
+        dir="rtl"
+      >
+        <div class="flex justify-center items-center">
+                <button
+                  class="dropdown justify-center border border-1 rounded-[30px] w-[122px] h-[55px] border-black px-8 py-2 flex items-center text-[18px] ml-6 hover:text-[#fca311] hover:bg-black"
+                >
+                  ورود
+                </button>
+            <div class="relative hidden select-none"
+            id="dropdown-menu"
+            >
+              <ul 
+              class="\ overflow-hidden absolute rounded-[30px] z-10   top-[34px]  left-[0px] py-5   bg-[#353535]   transition-[height]  w-[170px]"
+             >
+                <li class=" transition-[height] bg-[#F9D87617] my-3">
+                    <a href="{% url 'parent_login' %}" class="login-button w-[100%] ">
+                        <button
+                          class=" py-2 flex items-center justify-center  text-[18px] text-[#fca311] w-[100%] text-center hover:text-white hover:bg-black"
+                        >
+                          ورود والد
+                        </button>
+                      </a>
+                </li>
+                <li class=" transition-[height] bg-[#F9D87617] my-2">
+                    
+                      <a href="{% url 'child_login' %}" class="login-button">
+                        <button
+                          class="  py-2 flex items-center justify-center text-[18px] text-[#fca311] w-[100%] text-center  hover:text-white hover:bg-black"
+                        >
+                          ورود نوجوان
+                        </button>
+                      </a>
+                </li>
+                
+               
+              </ul>
+              
+            </div>
+        
+
+          <a href="{% url 'parent_signup' %}" class="signup-link">
+            <button
+              class="h-[55px] border border-1 rounded-[30px] border-black px-10 py-2 flex items-center text-[18px] hover:text-[#fca311] hover:bg-black"
+            >
+              ثبت نام 
+            </button>
+          </a>
+        </div>
+
+        <div class="w-[407px]" id="logo">
+          <img src="../static/image/logo.png" alt="Logo" />
+        </div>
+      </div>
+
+      <div class="flex justify-center items-center">
+      <div class="main flex justify-between mx-20 my-10 max-w-[1200px] border-2 border-[#353535] bg-white rounded-[36px] ">
+        <div class="my-10 mr-10 grid gap-4">
+          <h1
+            class="text-[#fca311] text-[48px] mb-10"
+          >
+            کش فلو
+          </h1>
+          <p class="text-[#fca311] text-[30px]" style="font-family: 'El Messiri'">
+            آینده روشن تر برای نوجوانان <br />آرامش خاطر بیشتر برای والدین
+          </p>
+          <p class="text-[25px] w-[325px]">
+            با کش‌فلو سواد و مدیریت مالی را به فرزندانتان آموزش دهید.
+          </p>
+          <a href="{% url 'parent_signup' %}" class="signup-link">
+            <button
+              class="h-[55px] border border-1 rounded-[10px] bg-[#353535] text-[#fca311] border-black px-10 py-2 flex items-center text-[18px]  hover:bg-gray-300 hover:text-black"
+            >
+              ثبت نام در کش فلو
+            </button>
+          </a>
+        </div>
+        <div >
+          <img class="rounded-[46px]" src="../static/image/12.jpg" alt="" />
+        </div>
+      </div>
+    </div>
+      <div dir="ltr" class="main flex items-center justify-evenly my-20 mx-16 ml-32">
+        <div class="">
+          <p class="text-black w-[649px] leading-8" dir="rtl" style="font-family: 'El Messiri'">
+            کش فلو، پلتفرمی تمام دیجیتال است که توسط آن نوجوانان به راحتی می
+            توانند هزینه های خود را ثبت کنند و اهداف مالی شان را دنبال کنند.این
+            برنامه با ارائه گزارش های دقیق ، به والدین کمک می کند تا به راحتی بر
+            هزینه های فرزندانشان نظارت داشته باشند و در عین حال ، به نوجوانان
+            استقلال مالی می آموزد.
+          </p>
+        </div>
+        <div >
+            <img class="rounded-full w-[334px]" src="../static/image/landingImg.jpg" alt="" />
+          </div>
+      </div>
+
+      <div class="service">
+        <div class="text-center text-[50px] my-20">
+          <span class="border-b  border-b-orange-500">خدمات</span>
+        </div>
+        <div
+          class="grid xl:grid-rows-2 md:grid-rows-3 lg:grid-rows-2 grid-rows-6 grid-flow-col justify-center xl:gap-4 my-8"
+        >
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">verified_user</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              امنیت بالا
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              ما به امنیت اطلاعات کاربران اهمیت می‌دهیم. تمامی داده‌ها با
+              استفاده از فناوری‌های رمزنگاری محافظت می‌شوند تا امنیت و حریم
+              خصوصی کاربران حفظ شود
+            </p>
+          </div>
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">headset_mic</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              مشاوره مالی حرفه‌ای
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              سیستم ما شامل مشاوره‌های مالی آنلاین است که به نوجوانان کمک می‌کند
+              تا در تصمیمات مالی خود بهتر عمل کنند. این مشاوره‌ها شامل نکات و
+              راهکارهایی برای بهبود وضعیت مالی است
+            </p>
+          </div>
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">people</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              مدیریت آسان برای والدین
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              والدین می‌توانند با استفاده از این سیستم، به راحتی خریدهای فرزندان
+              خود را نظارت کنند و از روند هزینه‌ها آگاه شوند. این ابزار به آن‌ها
+              کمک می‌کند تا در تصمیم‌گیری‌های مالی فرزندان خود مشارکت کنند
+            </p>
+          </div>
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">person_add</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              ثبت نام آسان
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              با استفاده از سیستم ما، نوجوانان می‌توانند به سادگی و در کمترین
+              زمان ممکن حساب کاربری خود را ثبت کنند. این فرآیند شامل مراحل ساده
+              و قابل درک است که به آن‌ها کمک می‌کند تا شروع به مدیریت خریدهای
+              خود کنند
+            </p>
+          </div>
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">trending_up</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              گزارش گیری دقیق
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              سیستم ما گزارش‌های دقیقی از خریدها و هزینه‌های کاربران ارائه
+              می‌دهد. نوجوانان می‌توانند به راحتی تجزیه و تحلیل کنند که کجا و
+              چگونه هزینه می‌کنند و به والدین خود گزارش‌های مفیدی ارسال کنند
+            </p>
+          </div>
+          <div
+            class="translate-z-0 bg-white hover:bg-YellowText rounded-[60px] h-[280px] pt-10 w-52 my-4 md:w-96 animate-[fadeInRight] delay-75 hover:animate-[fadeInUp] group hover:shadow-2xl shadow-lg max-w-[300px] px-3 py-2 text-center md:mx-6 xl:mx-6 mx-3 border-[5px] border-[#FCA311]"
+          >
+            <div class="icon flex justify-center items-center text-[30px] my-5">
+              <div
+                class="flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white text-[#fca311] border p-4 rounded-[50%] border-[#fca311] border-1 size-[60px]"
+              >
+                <i class="material-icons">refresh</i>
+              </div>
+            </div>
+            <h1 class="group-hover:hidden mb-4 title text-[20px] mt-16">
+              یادآوری هزینه ها
+            </h1>
+            <p
+              class="animate-pulse translate-z-0 animate-spin-moving2 m-2 description text-[12px] hidden group-hover:block group-hover:animate-linear"
+            >
+              با سیستم یادآوری ما، نوجوانان می‌توانند یادآوری‌هایی برای
+              هزینه‌های مختلف خود دریافت کنند. این ویژگی به آن‌ها کمک می‌کند تا
+              در مدیریت مالی خود بهتر عمل کنند و از فراموشی هزینه‌ها جلوگیری
+              کنند
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <style>
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    div,
+    p,
+    body,
+    span {
+      font-family: "El Messiri";
+    }
+
+    @layer base {
+      @font-face {
+        font-family: "El Messiri";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+      }
+    }
+  </style>
+  <script>
+    window.onscroll = function () {
+      const header = document.getElementById("header");
+      const logo = document.getElementById("logo");
+      const txt = document.querySelectorAll(".txt");
+
+      if (window.scrollY > 50) {
+        // وقتی که صفحه بیشتر از 50 پیکسل اسکرول می‌شود
+        header.classList.add("h-[60px]");
+        logo.classList.add("w-[100px]");
+        txt.foreach((element) => {
+          element.classList.add("text-[12px]");
+        });
+      } else {
+        header.classList.remove("h-[60px]");
+        logo.classList.remove("w-[100px]");
+        txt.foreach((element) => {
+          element.classList.remove("text-[12px]");
+        });
+      }
+    };
+  </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+       const dropdownmenue = document.getElementById("dropdown-menu");
+       const blurDiv = document.querySelector(".blurDiv");
+       const dropdown = document.querySelector(".dropdown");
+
+       dropdown.addEventListener("click", () => {
+dropdownmenue.classList.toggle("hidden");
+blurDiv.classList.toggle("blur-lg");
+});
+
+       window.onclick = function(event) {
+       if (!dropdown.contains(event.target) && !dropdownmenue.contains(event.target)) {
+dropdownmenue.classList.add("hidden");
+blurDiv.classList.remove("blur-lg");
+}
+};
+
+        })
+
+</script>
+</html>

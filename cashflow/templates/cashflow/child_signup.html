@@ -1,0 +1,615 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Child Signup</title>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts.min.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap" rel="stylesheet" />
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Harmattan:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Lemon&family=Lexend+Exa:wght@100..900&family=Marhey:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Scheherazade+New:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: "#da373d",
+            Yellow: "#fca311",
+            Gray: "#353535",
+          },
+          fontFamily: {
+            lemon: ["lemon"],
+            error: ["error"],
+            title: ["title"],
+            Material: ["Material Symbols Outlined"],
+          },
+        },
+      },
+    };
+  </script>
+   <style>
+
+    input:-webkit-autofill {
+      /* background-color: red !important; 
+      color: #000 !important;           */
+      border-top: 1px solid white !important;  
+      border-right: 1px solid white !important; 
+      border-left: 1px solid white !important;  
+     
+      box-shadow: 0 0 0px 1000px white inset !important; 
+    }
+    div , button {
+          font-family: "El Messiri";
+        }
+    
+        @layer base {
+          @font-face {
+            font-family: "El Messiri";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+          }
+        }
+      </style>
+  
+</head>
+
+<body class="bg-[#eeeeee] overflow-hidden">
+  <div dir="" class="flex ">
+    <div class="flex-1">
+      <div
+      dir="rtl"
+      class="header h-[70px] z-40 bg-white px-5 sticky top-0 flex justify-between items-center text-[20px] font-[40px]"
+    >
+      <p class="text-[28px]">داشبورد</p>
+      <div>
+        <div class="icon flex items-center" dir="rtl">
+          <span 
+
+          class="select-none dropdown z-10 relative cursor-pointer material-symbols-outlined mx-1 text-[30px] text-[#fca311]">
+            keyboard_arrow_down
+          </span>
+         
+          <div class="relative hidden"
+          id="dropdown-menu"
+          >
+            <ul 
+            class="overflow-hidden absolute rounded-[46px] z-10   top-[28px] left-[61px]  pb-3 pt-[2.5rem] bg-[rgb(214_214_214)]   transition-[height]  w-[170px]"
+           >
+              {% for child in children %}
+              <li class=" transition-[height] bg-[rgb(67_64_55_/68%)] my-2">
+                <a
+                  href="{% url 'parent_dashboard' child.id %}"
+                  class="block py-2 px-6 text-white hover:bg-[#bbbb] text-center  "
+                  style="cursor: pointer;"
+                >
+                  {{ child.username }}
+                </a>
+              </li>
+              {% empty %}
+              <li class="flex items-center justify-center  text-[13px] mb-9">
+                <p>
+                  هیچ فرزندی وجود ندارد
+                </p>
+              </li>
+              {% endfor %}
+             
+            </ul>
+            <div class=" absolute top-[-5] left-[57px] rotate-[64deg] w-0 h-0 border-x-[50px] border-x-transparent border-b-[100px] border-b-[rgb(214_214_214)] ">
+            </div>
+          </div>
+            
+          
+          <span class="material-symbols-outlined mx-1 text-[40px] text-[#fca311]">
+            account_child_invert
+          </span>
+          <!-- <span class="material-symbols-outlined mx-1 text-[40px] text-[#fca311]">
+            person
+          </span> -->
+        
+      </div>
+
+      </div>
+    </div>
+
+
+
+
+      <div class="blurDiv flex justify-center items-center h-[90%]">
+        <div dir="rtl"
+          class="backdrop-blur-md bg-white border-[3px] border-black  rounded-[30px] h-[600px] w-[600px] flex justify-center items-center">
+          <form method="post" action="{% url 'child_signup' parent.id %}" class="grid gap-20 items-center" id="registrationForm">
+            {% csrf_token %}
+            
+            <div
+              class="flex text-[#fca311] items-center justify-center text-[20px] font-bold "
+            >
+              ثبت نام
+            </div>
+
+
+
+            <input type="hidden" name="current_stage" value="{{ stage }}">
+   
+            {% if stage == 1 %}
+
+            <div class=" gap-10 grid">
+              <div>
+                <div class="flex items-end ">
+                  <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[8px]">
+                    email</span>
+               <div class="relative border-b-[3px] border-black w-[480px]">
+                 <input type="email" name="email"
+                 class=" email w-[350px]  peer py-4 px-0 block border-none bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                 placeholder="لطفا ایمیل خود را وارد کنید" />
+               <label for="email"
+                 class=" absolute top-[-10px] start-0  py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0] peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">
+                ایمیل
+                </label>
+              
+               </div>
+                </div>
+                <p class="text-red-600  text-[12px] relative right-[50px] mt-4" id="emailError">
+                  {% for error in form.username.errors %}{{ error }}{% endfor %}
+                </p>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if stage == 2 %}
+            <div class=" gap-10 grid">
+              <div>
+                <div class="flex items-end ">
+                  <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[8px]">
+                    email</span>
+               <div class="relative border-b-[3px] border-black w-[480px]">
+                 <input 
+                 type="email" 
+                 name="child_email"
+                 value = "{{ request.session.child_email }}"
+                 class="autofill:text-black  email w-[350px]  peer py-4 px-0 block border-none bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-black dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                 placeholder="لطفا ایمیل خود را وارد کنید" />
+               <label for="child_email"
+                 class=" absolute top-[-10px] start-0  py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">
+                ایمیل
+                </label>
+              
+               </div>
+                </div>
+                <p class="text-red-600  text-[12px] relative right-[50px] mt-4" id="emailError">
+                </p>
+              </div>
+              <div>
+                <div class="relative">
+                  <div class="flex items-end">
+                     <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[2px]">
+                         lock
+                      </span>  
+                  <div
+                    class="flex justify-between items-center border-b-[3px] border-black w-[480px]"
+                  >
+                  <input type="password" name="verification_code"
+                  class=" codeEmailInput  border-none selection input  peer py-4 px-0 block w-full bg-transparent border-t-transparent border-b-transparent border-x-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:border-b-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:focus:border-b-transparent focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+                  placeholder="" />
+                <label for="verification_code"
+                  class="top-[-10px] absolute  py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">
+                 کد ارسال شده به ایمیل
+                 </label>
+      
+      
+                  </div>
+                
+                  </div>
+                </div>
+                <div class="errors relative right-[50px] mt-4" id="codeEmailError">
+                 <p class="text-red-600  text-[12px] mt-4">
+                   {% for error in form.password.errors %}{{ error }}{% endfor %}
+                 </p>
+                  {% if error %}
+                  <p class="text-red-600 font-error text-[12px] mt-4">{{ error }}</p>
+                  {% endif %}
+                </div>
+
+
+               </div>
+  
+            </div> 
+            {% endif %}
+
+            {% if stage == 3 %}
+            <div class=" gap-10 grid">
+              <div>
+                <div class="flex items-end">
+              <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[8px]">
+                person</span>
+            <div class="relative border-b-[3px] border-black w-[480px]">
+              <input type="text" name="username"
+              class=" username w-[350px]  peer py-4 px-0 block border-none bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:border-b-neutral-700 dark:text-gray-800 dark:focus:ring-neutral-600 dark:focus:border-b-neutral-600 focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+              placeholder="لطفا نام کاربری خود را وارد کنید" />
+            <label for="username"
+              class=" absolute top-[-10px] start-0  py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">نام
+              کاربری</label>
+            
+            </div>
+                </div>
+                <p class="text-red-600  text-[12px] relative right-[50px] mt-4" id="error">
+                 {% for error in form.username.errors %}{{ error }}{% endfor %}
+                </p>
+             </div>
+  
+  
+           <div>
+  
+            <div class="relative">
+              <div class="flex items-end">
+                <span class="material-icons text-[45px] text-[#fca311] ml-1 relative top-[2px]">
+                  lock
+                  </span>  
+                  
+              <div
+                class="flex justify-between items-center border-b-[3px] border-black w-[480px]"
+              >
+              <input type="password" name="password"
+              class=" password border-none selection input  peer py-4 px-0 block w-full bg-transparent border-t-transparent border-b-transparent border-x-transparent text-sm placeholder:text-transparent focus:border-t-transparent focus:border-x-transparent focus:border-b-transparent focus:ring-0 disabled:opacity-50 disabled:pointer-events-none dark:focus:border-b-transparent focus:pt-6 focus:pb-2 [&:not(:placeholder-shown)]:pt-6 [&:not(:placeholder-shown)]:pb-2 autofill:pt-6 autofill:pb-2"
+              placeholder="" />
+            <label for="password"
+              class="top-[-10px] absolute  py-4 px-0 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent origin-[0_0]  peer-disabled:opacity-50 peer-disabled:pointer-events-none peer-focus:scale-90 peer-focus:translate-x-0.5 peer-focus:-translate-y-1.5 peer-focus:text-gray-500 dark:peer-focus:text-neutral-500 peer-[:not(:placeholder-shown)]:scale-90 peer-[:not(:placeholder-shown)]:translate-x-0.5 peer-[:not(:placeholder-shown)]:-translate-y-1.5 peer-[:not(:placeholder-shown)]:text-gray-500 dark:peer-[:not(:placeholder-shown)]:text-gray-500">رمز
+              عبور</label>
+    
+              <i class="material-icons iconEye cursor-pointer select-none text-[#fca311]">visibility_off</i>
+    
+              </div>
+            
+              </div>
+    
+            </div>
+            <div class="errors mt-4 relative right-[50px]" >
+              <p class="text-red-600  text-[12px] " id="errorPass">
+                {% for error in form.password.errors %}{{ error }}{% endfor %}
+              </p>
+              {% if error %}
+              <p class="text-red-600 font-error text-[12px] mt-4">{{ error }}</p>
+              {% endif %}
+            </div>
+            </div>
+
+    
+              </div>
+              {% endif %}
+
+              <!-- Navigation Buttons -->
+            <div class="mt-9 items-center justify-evenly flex w-[100%]">
+              {% if stage > 1 %}
+              <!-- Previous Button -->
+              <button 
+                  type="submit" 
+                  name="action" 
+                  value="prev_stage" 
+                  class=" prevBtn2 rounded-[18px] w-[187px] h-[58px] bg-[#fca311] text-[20px] font-bold py-[8px] px-12"
+              >
+                  قبلی
+              </button>
+              {% endif %}
+
+              <!-- Next or Submit Button -->
+              <button 
+              type="submit" 
+              name="action2" 
+              value="next_stage"
+              class="btns rounded-[18px] w-[187px] h-[58px] bg-[#fca311] text-[20px] font-bold py-[8px] px-12">
+                  {% if stage < 3 %} بعدی {% else %} ثبت نام {% endif %}
+              </button>
+            </div>
+  
+            
+          </form>
+        </div>
+      </div>
+
+
+
+
+    </div>
+
+    <div
+    dir="rtl"
+    class="w-[16%] bg-[#D6D6D6] h-[100vh] sticky bottom-0 top-0 right-0 pt-2 "
+  >
+        <div class="logo flex  justify-center items-center">
+
+        <img src="{% static 'image/logo.png' %}" alt="" class="w-[150px]" />
+
+      </div>
+      <div class="grid grid-cols-1 place-content-between   gap-20 h-[85%]">
+        <ul class=" pt-10 ">
+          <li class="flex items-center mb-8 hover:bg-[#bbbbbb] group  px-[35px] py-2">
+            <div class="ml-5">
+              <span class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white">
+                home
+              </span>
+
+            </div>
+            {% if child %}
+            <a href="{% url 'parent_dashboard' child_id=child.id %}">
+            <p class="text-[15px]">کارتابل</p>
+            </a>
+            {% else %}
+            <a href="{% url 'parent_dashboard' child_id=parent.id %}">
+            <p class="text-[15px]">کارتابل</p>
+            </a>
+            {% endif %}
+          </li>
+          <li class="flex items-center mb-8 hover:bg-[#bbbbbb] group  px-[35px] py-2">
+            <div class="ml-5">
+              <span class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white">
+                app_registration
+
+
+              </span>
+            </div>
+            <p class="text-[15px]">ثبت هزینه</p>
+
+          </li>
+          <li class="flex items-center mb-8 hover:bg-[#bbbbbb] group  px-[35px] py-2">
+            <div class="ml-5">
+              <span class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white">
+                query_stats
+
+              </span>
+            </div>
+            {% if parent.child %}
+            <a href="{% url 'details' child.id %}">
+                <p class="text-[15px]">جزئیات گزارش</p>
+              </a>
+              {% else %}
+              <p class="text-[15px]">جزئیات گزارش</p>
+              {% endif %}
+
+          </li>
+          <li class="flex items-center mb-8 hover:bg-[#bbbbbb] group  px-[35px] py-2">
+            <div class="ml-5">
+              <span class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white">
+                add_notes
+
+              </span>
+            </div>
+            <a href="{% url 'child_signup' parent.id %}">
+                <p class="text-[15px]">افزودن فرزند</p>
+            </a>
+
+          </li>
+
+
+        </ul>
+        <ul class="bottom-0 ">
+          <li class="flex items-center  hover:bg-[#bbbbbb] group py-2 px-[35px]">
+            <div class="ml-5">
+              <span class="material-symbols-outlined text-[35px] text-Yellow group-hover:text-white">
+                exit_to_app
+              </span>
+            </div>
+            <a href="{% url 'landing' %}">
+              <p class="text-[15px] ">خروج</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+
+  </div>
+  <script>
+    const iconEye = document.querySelector(".iconEye");
+    const input = document.querySelector(".input");
+
+    iconEye.addEventListener("click", () => {
+      if (iconEye.textContent === "visibility") {
+        iconEye.textContent = "visibility_off";
+        input.type = "password";
+      } else {
+        iconEye.textContent = "visibility";
+        input.type = "text";
+      }
+    });
+  </script>
+  <script src="{% static 'js/index.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+   const dropdownmenue = document.getElementById("dropdown-menu");
+   const blurDiv = document.querySelector(".blurDiv");
+   const dropdown = document.querySelector(".dropdown");
+
+   dropdown.addEventListener("click", () => {
+dropdownmenue.classList.toggle("hidden");
+blurDiv.classList.toggle("blur-lg");
+});
+
+   window.onclick = function(event) {
+   if (!dropdown.contains(event.target) && !dropdownmenue.contains(event.target)) {
+dropdownmenue.classList.add("hidden");
+blurDiv.classList.remove("blur-lg");
+}
+};
+
+    })
+
+</script>
+
+<script>
+          document.addEventListener('DOMContentLoaded', () => {
+
+  const usernameInput = document.querySelector(".username");
+  const passInput = document.querySelector(".password");
+  const emailInput = document.querySelector(".email");
+  const codeEmailInput = document.querySelector(".email");
+
+  const passError = document.getElementById("errorPass");
+  const emailError=document.getElementById("errorEmail")
+  const codeEmailError=document.getElementById("codeEmailError")
+  const usernameError = document.getElementById("error");
+
+  const nextBtn1=document.querySelector(".nextBtn1")
+  const nextBtn2=document.querySelector(".nextBtn2")
+
+  const prevPage=document.querySelector(".prevPage")
+  
+  const nextPage=document.querySelector(".nextPage")
+  const pageCodeEmail=document.querySelector(".pageCodeEmail")
+  const submitBtn=document.querySelector(".submitBtn")
+ 
+  const prevBtn1=document.querySelector(".prevBtn1")
+  const prevBtn2=document.querySelector(".prevBtn2")
+    prevBtn1.addEventListener("click",()=>{
+    pageCodeEmail.classList.add("hidden")
+    prevPage.classList.remove("hidden")
+    prevPage.classList.add("grid")
+    prevBtn1.classList.remove("grid")
+    prevBtn1.classList.add("hidden")
+
+    nextBtn2.classList.remove("grid")
+    nextBtn2.classList.add("hidden")
+
+    nextBtn1.classList.remove("hidden")
+    nextBtn1.classList.add("grid")
+  })
+  prevBtn2.addEventListener("click",()=>{
+    nextPage.classList.remove("grid")
+    nextPage.classList.add("hidden")
+    
+    pageCodeEmail.classList.remove("hidden")
+    pageCodeEmail.classList.add("grid")
+    prevBtn2.classList.remove("grid")
+    prevBtn2.classList.add("hidden")
+
+    prevBtn1.classList.remove("hidden")
+    prevBtn1.classList.add("grid")
+
+    nextBtn2.classList.remove("hidden")
+    nextBtn2.classList.add("grid")
+
+    submitBtn.classList.remove("flex");
+    submitBtn.classList.add("hidden");
+
+  })
+  if (usernameInput) {
+          usernameInput.addEventListener("input", function () {
+          if (usernameError) {
+            usernameError.style.display = "none";
+
+              usernameError.textContent("")
+          }
+      });
+  } 
+  if (passInput) {
+          passInput.addEventListener("input", function () {
+          if (passError) {
+              passError.style.display = "none";
+          }
+      });
+  } 
+  if (emailInput) {
+    emailInput.addEventListener("input", function () {
+          if (emailError) {
+            emailError.style.display = "none";
+          }
+      });
+  }
+  if (codeEmailInput) {
+    codeEmailInput.addEventListener("input", function () {
+          if (codeEmailError) {
+            codeEmailError.style.display = "none";
+          }
+      });
+  }
+  nextBtn1.addEventListener("click", () => {
+      console.log("hi ");
+      
+      const email = emailInput.value.trim();
+      // const codeemail = codeEmailInput.value.trim();
+      console.log(codeEmailInput);
+      
+      let isValid = true;
+      if (!email) {
+          if (emailError) {
+              emailError.style.display = "block";
+              // emailError.textContent = "نام کاربری نمی‌تواند خالی باشد!";
+          }
+          isValid = false;
+      }
+      // if (!codeemail) {
+      //     if (codeEmailError) {
+      //       codeEmailError.style.display = "block";
+      //         // codeEmailError.textContent = "رمز عبور نمی‌تواند خالی باشد!";
+      //     }
+      //     isValid = false;
+      // }
+      if (isValid) {
+          prevPage.classList.add("hidden");
+          pageCodeEmail.classList.remove("hidden")
+          pageCodeEmail.classList.add("grid")
+          // nextPage.classList.remove("hidden");
+          // nextPage.classList.add("grid");
+          // nextBtn1.classList.add("hidden");
+          // submitBtn.classList.remove("hidden");
+          // submitBtn.classList.add("grid");
+          prevBtn1.classList.remove("hidden");
+          prevBtn1.classList.add("grid");
+          nextBtn1.classList.remove("grid")
+          nextBtn1.classList.add("hidden")
+          nextBtn2.classList.remove("hidden")
+          nextBtn2.classList.add("grid")
+
+      }
+  });
+  nextBtn2.addEventListener("click", () => {
+    console.log("hi 2");
+
+      // const email = emailInput.value.trim();
+      const codeemail = codeEmailInput.value.trim();
+    
+      if (!codeemail) {
+          if (codeEmailError) {
+            codeEmailError.style.display = "block";
+              // codeEmailError.textContent = "رمز عبور نمی‌تواند خالی باشد!";
+          }
+          isValid = false;
+      }
+      if (true) {
+          pageCodeEmail.classList.remove("grid");
+          pageCodeEmail.classList.add("hidden");
+          nextPage.classList.remove("hidden");
+          nextPage.classList.add("grid");
+          nextBtn2.classList.remove("grid");
+          nextBtn2.classList.add("hidden");
+          submitBtn.classList.remove("hidden");
+          submitBtn.classList.add("flex");
+          prevBtn1.classList.remove("grid");
+          prevBtn1.classList.add("hidden");
+          prevBtn2.classList.remove("hidden");
+          prevBtn2.classList.add("grid");
+      }
+  });
+
+          })
+</script>
+
+</html>

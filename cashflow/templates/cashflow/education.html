@@ -1,0 +1,865 @@
+{% load humanize %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Education</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Harmattan:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Lemon&family=Lexend+Exa:wght@100..900&family=Marhey:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Scheherazade+New:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+              Yellow: "#fca311",
+              Gray: "#353535",
+            },
+            dropShadow: {
+              "3xl": "0 35px 35px rgba(0, 0, 0, 0.25)",
+              "4xl": [
+                "0 35px 35px rgba(0, 0, 0, 0.25)",
+                "0 45px 65px rgba(0, 0, 0, 0.15)",
+              ],
+            },
+            fontFamily: {
+              lemon: ["lemon"],
+              error: ["error"],
+              title: ["title"],
+              Material: ["Material Symbols Outlined"],
+            },
+          },
+        },
+      };
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <!-- <style media="only screen">
+        :root {
+            --button-background-color: transparent;
+            --button-text-color: #212529;
+            --button-color-border-primary: #d0d5dd;
+            --button-hover-background-color: rgba(0, 0, 0, 0.1);
+            --select-chevron: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23182230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 9L12 15L18 9"/></svg>');
+
+            overflow: hidden;
+            font-family: -apple-system, "system-ui", "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+                "Noto Color Emoji";
+        }
+
+        :root[data-dark-mode="false"] {
+            background: #192232;
+        }
+
+        :root[data-dark-mode="true"] {
+            --button-text-color: #f8f9fa;
+            --button-color-border-primary: rgb(255, 255, 255);
+            --button-hover-background-color: #2a343e;
+            --select-chevron: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 9L12 15L18 9"/></svg>');
+
+            background: #192232;
+            color: white;
+        }
+
+
+        :root,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: grid;
+            /* grid-auto-rows: minmax(0, 1fr);
+         grid-auto-columns: minmax(0, 1fr); */
+        }
+
+        /* p{
+            
+            color: #d9d9d9;  
+        } */
+    </style> -->
+  </head>
+  <style>
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    div,
+    p,
+    body,
+    span {
+      font-family: "El Messiri";
+    }
+
+    @layer base {
+      @font-face {
+        font-family: "El Messiri";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(../fonts/ElMessiri-VariableFont_wght.ttf) format("ttf");
+      }
+    }
+  </style>
+  <body class="bg-[#eeeeee] overflow-hidden">
+    <div dir="" class="flex w-[84%]">
+      <div class="flex-1">
+        <div
+          dir="rtl"
+          class="header h-[70px] z-40 bg-white px-5 sticky top-0 flex justify-between items-center text-[20px] font-[40px]"
+          >
+          <p class="text-[28px]">داشبورد</p>
+          <!-- <div>
+                    <div class="icon">
+                        <span class="material-symbols-outlined text-[50px]">
+                            account_circle
+                        </span>
+                    </div>
+                    <div class="buttton"></div>
+                </div> -->
+        </div>
+
+        <div>
+
+            {% if needs or wants or other and income %}
+            <!-- full items -->
+            <div class="container1 flex items-center justify-evenly px-16 py-5 mt-10" dir="rtl">
+                <!--  right-->
+                <div class="w-[40%] ">
+
+                    <div
+                        class=" pt-10 relative w-[364px] border-[3px] border-[#353535] bg-white rounded-[46px] h-[450px]  px-5 py-2">
+                        <div class="absolute w-[100%] flex justify-center mb-5 top-[-41px] right-0">
+                            <div
+                                class="flex text-[18px] items-center justify-center w-[164px] h-[61px] bg-[#353535] border-[2px] border-white rounded-[46px] text-[#fca311] drop-shadow-[0_13px_13px_rgba(131,126,126,85%)]">
+                                بودجه بندی
+                            </div>
+                        </div>
+                        <div class="">
+                            <div>
+                                <div class="flex items-center justify-between text-[20px]">
+                                    <h2>درآمد این ماه:</h2>
+                                    <p>{{income|intcomma}}T</p>
+                                  </div>
+                                <div class="chart relative bottom-0">
+                                    <h2 class="my-1">تقسیم بندی:</h2>
+                                    <div class=" ">
+                                        <div class="flex justify-end">
+                                            <div class="w-[85%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+                                                <div class="title text-[#A77212] font-bold">(50%)نیازها</div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#353535]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_needs_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <div class="w-[95%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+
+                                                <!-- <div class="flex justify-between items-center gap-x-10  text-white mr-5 my-1 h-[40px] bg-[#A9A9A9] px-5 relative before:absolute before:right-[-20px] before:bottom-0 before:w-0 before:h-0 before:border-l-[20px] before:border-l-[#A9A9A9] before:border-t-transparent before:border-b-transparent before:border-b-[20px] before:border-t-[20px]" dir="rtl"> -->
+                                                <div class="title text-[#A77212] font-bold">(30%)خواسته ها</div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#a7a7a7]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_wants_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <div class="w-[100%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+                                                <div class="title text-[#A77212] font-bold">(20%) سایر
+                                                </div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#fca311]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_other_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="h-[230px] relative " dir="ltr" id="myChart"></div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <!--  left-->
+               
+                <div class="w-[60%] ">
+                    <div
+                        class=" w-[628px] relative border-[3px] border-[#353535] bg-white rounded-[46px] h-[450px]  px-5 py-2 ">
+                        <div class="">
+                            <div class="absolute w-[100%] flex justify-center mb-5 top-[-41px] right-[-81px]">
+                                <div
+                                    class="flex text-[18px]  items-center justify-center w-[220.65px] h-[61px] bg-[#353535] border-[2px] border-white rounded-[46px] text-[#fca311] drop-shadow-[0_13px_13px_rgba(131,126,126,85%)]">
+                                    بررسی هزینه های این ماه
+                                </div>
+                            </div>
+                            <div
+                                class="absolute w-[270px] top-[-43px] left-[-48px] h-[270px] rounded-full bg-[#eeeeee]">
+                            </div>
+                            <div class="absolute h-[321px] my-3 w-[100%]  left-[-224px] top-[-97px]" id="myChart2"
+                                dir="ltr"></div>
+
+                            <div class="block mt-14 mb-8">
+                                <div class="text-[#353535] text-[12px]">نیاز ها</div>
+
+                                <div
+                                    class="border-[1px] border-[#bbbb] mb-1 h-[53px] w-[100%] flex items-center justify-start gap-20 px-5">
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                        <div class="shape">
+                                            <div class="w-[20px] h-[20px] rounded-full bg-[#353535]"></div>
+                                        </div>
+                                        <div class="amount">
+                                          <div class="amount">{{needs|intcomma}}T</div>
+
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                      {% if needs > supposed_needs_amount %}
+                                      <div class="text-[#8C1C13]">
+                                        {{ needs_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">بیشتر از بودجه</div>
+                                      {% elif needs < supposed_needs_amount %}
+                                      <div class="text-[#007B5E]">
+                                        {{ needs_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">کمتر از بودجه</div>
+                                      {% else %}
+                                      <div class="text-[#353535]">۰ T</div>
+                                      <div class="amount">مطابق بودجه</div>
+                                      {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="text-[#A9A9A9] text-[12px]">خواسته ها</div>
+                                <div
+                                    class="border-[1px] border-[#bbbb] mb-1 h-[53px] w-[100%] flex items-center justify-start gap-20 px-5">
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                        <div class="shape">
+                                            <div class="w-[20px] h-[20px] rounded-full bg-[#A9A9A9]"></div>
+                                        </div>
+                                          <div class="amount">{{wants|intcomma}}T</div>
+                                    </div>
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                      {% if wants > supposed_wants_amount %}
+                                      <div class="text-[#8C1C13]">
+                                        {{ wants_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">بیشتر از بودجه</div>
+                                      {% elif wants < supposed_wants_amount %}
+                                      <div class="text-[#007B5E]">
+                                        {{ wants_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">کمتر از بودجه</div>
+                                      {% else %}
+                                      <div class="text-[#353535]">۰ T</div>
+                                      <div class="amount">مطابق بودجه</div>
+                                      {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="text-[#fca311] text-[12px]">سایر</div>
+                                <div
+                                    class="border-[1px] border-[#bbbb] mb-1 h-[53px] w-[100%] flex items-center justify-start gap-20 px-5">
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                        <div class="shape">
+                                            <div class="w-[20px] h-[20px] rounded-full bg-[#fca311]"></div>
+                                        </div>
+                                        <div class="amount">{{other}}T</div>
+                                    </div>
+                                    <div class="flex justify-between items-center gap-2" dir="rtl">
+                                      {% if other > supposed_other_amount %}
+                                      <div class="text-[#8C1C13]">
+                                        {{ other_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">بیشتر از بودجه</div>
+                                      {% elif other < supposed_other_amount %}
+                                      <div class="text-[#007B5E]">
+                                        {{ other_difference|intcomma }} T
+                                      </div>
+                                      <div class="amount">کمتر از بودجه</div>
+                                      {% else %}
+                                      <div class="text-[#353535]">۰ T</div>
+                                      <div class="amount">مطابق بودجه</div>
+                                      {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="video flex items-center justify-between gap-5" dir="ltr">
+                                <div class="text flex-1 text-justify" dir="rtl">
+                                    این جا یک سری ویدیو خوبه برای تو دوست عزیزم تا یاد بگیری پول برای تموم کردن
+                                    نیست😊
+                                </div>
+                                <div class="items grid grid-cols-2 gap-4">
+                              <div
+                                class="item1 w-[152px] h-[43px] rounded-[46px] bg-[#353535] relative border-[3px] border-[#353535]"
+                              >
+                                <div
+                                  class="video flex items-center justify-end px-[10px] h-[100%]"
+                                >
+                                  <a
+                                    href="https://www.youtube.com/watch?v=pXEjby1H5RU"
+                                    class="text-[#fca311] text-[12px]">
+                                    آموزش هوش مالی
+                                  </a>
+                                </div>
+                                <span
+                                  class="material-symbols-outlined absolute text-white left-[-8px] top-[-7px] text-[51px]"
+                                >
+                                  play_circle
+                                </span>
+                              </div>
+                              <div
+                                class="item2 w-[152px] h-[43px] rounded-[46px] bg-[#353535] relative border-[3px] border-[#353535]"
+                              >
+                                <div
+                                  class="video flex items-center justify-end px-[20px] h-[100%]"
+                                >
+                                  <a
+                                    href="https://www.aparat.com/v/q651ixv"
+                                    class="text-[#fca311] text-[12px]">
+                                    پولتو مدیریت کن
+                                  </a>
+                                </div>
+                                <span
+                                  class="material-symbols-outlined absolute text-white left-[-8px] top-[-7px] text-[51px]"
+                                >
+                                  play_circle
+                                </span>
+                              </div>
+                              <div
+                                class="item3 w-[152px] h-[43px] rounded-[46px] bg-[#353535] relative border-[3px] border-[#353535]"
+                              >
+                                <div
+                                  class="video flex items-center justify-end px-[24px] h-[100%]"
+                                >
+                                  <a
+                                    href="https://youtu.be/qx6xqOp3jGY?si=2o4PSCAMqd3Vswx3"
+                                    class="text-[#fca311] text-[12px]"
+                                  >
+                                    هوش مالی </br>رابرت کیوساکی
+                                  </a>
+                                </div>
+                                <span
+                                  class="material-symbols-outlined absolute text-white left-[-8px] top-[-7px] text-[51px]"
+                                >
+                                  play_circle
+                                </span>
+                              </div>
+                              <div
+                                class="item4 w-[152px] h-[43px] rounded-[46px] bg-[#353535] relative border-[3px] border-[#353535]"
+                              >
+                                <div
+                                  class="video flex items-center justify-end h-[100%] px-[38px]"
+                                >
+                                  <a
+                                    href="https://youtu.be/woctJskDuXs?si=OgG1knOtjMt9ryZJ"
+                                    class="text-[#fca311] text-[12px]">
+                                    50, 30, 20
+                                  </a>
+                                </div>
+                                <span
+                                  class="material-symbols-outlined absolute text-white left-[-8px] top-[-7px] text-[51px]"
+                                >
+                                  play_circle
+                                </span>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            </div>
+
+
+
+            <!-- left empty -->
+
+            {% if not needs and not wants and not other and income %}
+            <div class="container1 flex items-center justify-center px-16 py-5 mt-10" dir="rtl">
+                <!--  right-->
+                <div class="w-[40%] ">
+
+                    <div
+                        class=" pt-10 relative w-[364px] border-[3px] border-[#353535] bg-white rounded-[46px] h-[450px]  px-5 py-2">
+                        <div class="absolute w-[100%] flex justify-center mb-5 top-[-41px] right-0">
+                            <div
+                                class="flex text-[18px] items-center justify-center w-[164px] h-[61px] bg-[#353535] border-[2px] border-white rounded-[46px] text-[#fca311] drop-shadow-[0_13px_13px_rgba(131,126,126,85%)]">
+                                بودجه بندی
+                            </div>
+                        </div>
+                        <div class="">
+                            <div>
+                                <div class="flex items-center justify-between text-[20px]">
+                                    <h2>درآمد این ماه:</h2>
+                                    <p>{{income|intcomma}}T</p>
+                                  </div>
+                                <div class="chart relative bottom-0">
+                                    <h2 class="my-1">تقسیم دددبندی:</h2>
+                                    <div class=" ">
+                                        <div class="flex justify-end">
+                                            <div class="w-[85%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+                                                <div class="title text-[#A77212] font-bold">(50%)نیازها</div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#353535]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_needs_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <div class="w-[95%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+
+                                                <!-- <div class="flex justify-between items-center gap-x-10  text-white mr-5 my-1 h-[40px] bg-[#A9A9A9] px-5 relative before:absolute before:right-[-20px] before:bottom-0 before:w-0 before:h-0 before:border-l-[20px] before:border-l-[#A9A9A9] before:border-t-transparent before:border-b-transparent before:border-b-[20px] before:border-t-[20px]" dir="rtl"> -->
+                                                <div class="title text-[#A77212] font-bold">(30%)خواسته ها</div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#a7a7a7]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_wants_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <div class="w-[100%] flex justify-between items-center  py-4   my-1 h-[30px] border-[1px] border-[#414040] px-2 relative "
+                                                dir="rtl">
+                                                <div class="title text-[#A77212] font-bold">(20%) سایر
+                                                </div>
+
+                                                <div class="flex justify-between items-center gap-2" dir="ltr">
+                                                    <div class="shape">
+                                                        <div class="w-[20px] h-[20px] rounded-full bg-[#fca311]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="amount">
+                                                      {{supposed_other_amount|intcomma}}T
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="h-[230px] relative " dir="ltr" id="myChart"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- empty  left-->
+                <div class="w-[60%] ">
+                  <div
+                  class=" w-[628px] relative border-[3px] border-[#353535] bg-white rounded-[46px] h-[450px]  px-5 py-2 ">
+                  
+                      <div class="flex items-center justify-center h-[100%]">
+                              <div class="">
+                                  <div class="flex items-center justify-center">
+                                      <span class="material-symbols-outlined text-[87px] text-[#353535]">
+                                          wallet
+                                      </span>
+                                  </div>
+
+                                  <h1 class="text-[15px] text-center">
+                                      دراین ماه،هزینه ای ثبت نکرده‌اید.
+                                  </h1>
+                              </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          
+             </div>
+            {% endif %}
+         
+
+            {% if not income %}
+            <!-- left and right empty -->
+            <div class="container1 flex items-center justify-evenly pr-16 py-5 mt-10" dir="rtl">
+                <!-- empty tar right-->
+                <div class="w-[60%] ">
+
+                    <div class=" w-[628px] relative border-[3px] border-[#353535] bg-white rounded-[46px] h-[450px]  px-5 py-2 ">
+                       <div class="">
+                           <div class="absolute w-[100%] flex justify-center mb-5 top-[-41px] right-[-81px]">
+                               <div
+                                   class="flex text-[18px] items-center justify-center w-[164px] h-[61px] bg-[#353535] border-[2px] border-white rounded-[46px] text-[#fca311] drop-shadow-[0_13px_13px_rgba(131,126,126,85%)]">
+                                       بودجه بندی
+                               </div>
+                           </div>
+                           <div>
+                               <div class="text-center mb-5 mt-10 white-text-shadow text-white   ">
+                                   قانون 50/30/20
+
+                               </div>
+                               <div>
+                                  یکی از روش های بودجه بندی به این شکله که هزینه ماهیانه‌ات رو درصدبندی کنی تا ملاحظه بیشتری نسبت به خرج‌کردن داشته باشی.
+                                  با این روش،نصف ماهیانه‌ات رو(50%) برای نیازهای اصلی و اساسی میذاری.مثل خریدن غذا،شهریه تحصیل و ...
+                                  30%باقی‌مونده ماهیانه‌ات رو به خواسته هات اختصاص میدی.مثل و ...
+                                  20%آخر رو هم اختصاص میدی به پس‌انداز و بدهی.اگر به کسی قرضی داری،این قسمت برای اینه.و اگر‌نه،میتونی این قسمت رو پس‌انداز کنی یا برای تفریح و یا هرمورد دیگه‌ای خرجش کنی.
+                               </div>
+                               <div 
+                               class="h-[230px] relative left-[-164px] top-[-23px]"
+
+                               id="myChart3">
+
+                               </div>
+                           </div>
+                           
+                       </div>
+                        
+   
+                   </div>
+               
+               
+               </div>
+                <!-- empty tar left-->
+                <div class="w-[40%] ">
+                    <div
+                        class="pt-10 relative w-[364px] border-[3px] border-[#353535] bg-[#353535] rounded-[46px] h-[450px]  px-5 py-2">
+                        <div class="">
+                            <div class="absolute w-[100%] flex justify-center mb-5 top-[-41px] right-[0px]">
+                                <div
+                                    class="flex text-[18px]  items-center justify-center w-[220.65px] h-[61px] bg-[#353535] border-[2px] border-white rounded-[46px] text-[#fca311] ">
+                                    بررسی هزینه های این ماه
+                                </div>
+                            </div>
+                            <div class="flex  items-center justify-center h-[100%]">
+                                <div class="mb-5 mt-28">
+                                    <div class="flex items-center justify-center ">
+                                        <span class="material-symbols-outlined text-[87px] text-[#ffff]">
+                                            wallet
+                                        </span>
+                                    </div>
+
+                                    <h1 class="text-[15px] text-[#ffff]">
+                                        هنوز ثبتی صورت نگرفته است
+                                    </h1>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+            </div>
+            {% endif %}
+
+
+        </div>
+
+      </div>
+
+    
+    </div>
+    <div
+    dir="rtl"
+    class="w-[16%] bg-[#D6D6D6] h-[100vh] fixed right-0 bottom-0 top-0  pt-2 px-4 "
+    >
+    <div class="logo flex justify-center items-center">
+      <img src="{% static 'image/logo.png' %}" class="w-[150px]" alt="" />
+    </div>
+    <div class="grid px-5 gap-20">
+      <ul class="pt-10 col-start-1 col-end-3">
+        <li class="flex items-center mb-8">
+          <div class="ml-5">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              home
+            </span>
+          </div>
+          <a href="{% url 'child_dashboard' child.id %}">
+            <p class="text-[15px]">داشبورد</p>
+          </a>
+        </li>
+        <li class="flex items-center mb-8">
+          <div class="ml-5">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              app_registration
+            </span>
+          </div>
+         <a href="{% url 'costs' child.id %}">
+            <p class="text-[15px] cursor-pointer">ثبت هزینه</p>
+          </a>
+        </li>
+        <li class="flex items-center mb-8">
+          <div class="ml-5">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              query_stats
+            </span>
+          </div>
+          <a href="{% url 'details' child.id %}">
+            <p class="text-[15px] cursor-pointer">جزئیات خرج</p>
+          </a>
+        </li>
+        <li class="flex items-center mb-8">
+          <div class="ml-5">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              add_notes
+            </span>
+          </div>
+          <a href="{% url 'goals' child.id %}">
+            <p class="text-[15px] cursor-pointer">تعیین هدف</p>
+          </a>
+        </li>
+        <li class="flex items-center mb-8">
+          <div class="ml-4">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              price_check</span>
+          </div>
+          <a href="{% url 'education' child.id %}">
+            <p class="text-[15px] cursor-pointer">آموزش</p>
+          </a>
+        </li>
+      </ul>
+      
+      <ul class="bottom-0 col-start-1 col-end-3">
+        <li class="flex items-center mb-8 mt-10">
+          <div class="ml-4">
+            <span class="material-symbols-outlined text-[35px] text-Yellow">
+              exit_to_app
+            </span>
+          </div>
+          <a href="{% url 'landing' %}">
+            <p class="text-[15px]">خروج</p>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@10.3.3/dist/umd/ag-charts-enterprise.js?t=1731495815863"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@10.3.3/dist/umd/ag-charts-enterprise.js?t=1731495816075"></script>
+  <script src="../cashflow/js/data.js"></script>
+  <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+
+  <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@11.0.0/dist/umd/ag-charts-community.js?t=1733932964665"></script>
+  <script src="/charts/vanilla/pie-series/examples/simple-pie/data.js"></script>
+  <script src="/charts/vanilla/pie-series/examples/simple-pie/main.js"></script>
+  <script>
+    const { AgCharts } = agCharts;
+    const supposed_needs_amount = {{supposed_needs_amount|safe}};
+    const supposed_wants_amount = {{supposed_wants_amount|safe}};
+    const supposed_other_amount = {{supposed_other_amount|safe}};
+    const actual_needs_perce = {{ actual_needs_perce|safe }};
+    const actual_wants_perce = {{ actual_wants_perce|safe }};
+    const actual_other_perce = {{ actual_other_perce|safe }};
+    const data = [
+       { asset: "نیازها", asset2: `(50%)\n${supposed_needs_amount}`, amount: supposed_needs_amount },
+      { asset: "خواسته‌ها", asset2: `(30%)\n${supposed_wants_amount}`, amount: supposed_wants_amount },
+      { asset: "سایر", asset2: `(20%)\n${supposed_other_amount}`, amount: supposed_other_amount },
+    ];
+
+    const options = {
+      background: {
+        visible: false,
+      },
+      legend: {
+        enabled: false,
+        position: "top",
+        maxHeight: 200,
+        spacing: 10,
+        orientation: "vertical",
+        item: {
+          // paddingX:10,
+
+          label: {
+            fontSize: 10,
+            fontStyle: "italic",
+            fontWeight: "bold",
+            fontFamily: "Papyrus",
+            color: "black", // تنظیم رنگ به مشکی
+          },
+          marker: {
+            shape: "circle",
+          },
+        },
+        line: {
+          strokeWidth: 2,
+          length: 60,
+        },
+      },
+
+      container: document.getElementById("myChart"),
+      data: data,
+      //   title: {
+      //     text: "Portfolio Composition",
+      //   },
+      series: [
+        {
+          sectorLabelKey: "asset2", //وسط دایره
+
+          type: "pie",
+          angleKey: "amount",
+          legendItemKey: "asset",
+          fontSize: "12px",
+          fills: ["#353535","#a7a7a7", "#fba110"], // رنگ‌ها به ترتیب برای هر بخش چارت
+        },
+      ],
+      overlays: {
+        noData: {
+          text: "داده ای برای نمایش وجود ندارد",
+        },
+      },
+
+      //   dataSource: {
+      //     getData: () =>
+      //       new Promise(() => {
+      //         // Never resolve so the loading spinner remains
+      //       }),
+      //   },
+    };
+
+    AgCharts.create(options);
+  </script>
+  <script>
+
+    const needs = {{ needs|safe }};
+    const wants = {{ wants|safe }};
+    const other = {{ other|safe }};
+    console.log({
+      actual_needs_perce,
+      actual_wants_perce,
+      actual_other_perce,
+      needs,
+      wants,
+      other,
+    });
+
+    const data2 = [
+      { asset: "نیازها\n", percentage: actual_needs_perce, amount: needs },
+      { asset: "خواسته‌ها\n", percentage: actual_wants_perce, amount: wants },
+      { asset: "سایر\n", percentage: actual_other_perce, amount: other },
+    ];
+    console.log(data2);
+
+    const options2 = {
+      background: {
+        visible: false,
+      },
+      legend: {
+        enabled: false,
+        position: "left",
+        paddingX: 20,
+      },
+      container: document.getElementById("myChart2"),
+      data: data2,
+
+      title: {
+        text: " ",
+      },
+      overlays: {
+        noData: {
+          text: "داده ای برای نمایش وجود ندارد",
+        },
+      },
+
+      series: [
+        {
+          fills: ["#353535", "#a7a7a7", "#fba110"], // رنگ‌ها به ترتیب برای هر بخش چارت
+          calloutLabel: {
+            color: "white",
+            fill: "white",
+
+            enabled: false,
+          },
+          type: "pie",
+          angleKey: "amount",
+          calloutLabelKey: "amount",
+          sectorLabelKey: "asset",
+          sectorLabel: {
+            color: "white",
+            fontWeight: "bold",
+            formatter: ({ datum }) => `${datum.asset} (${datum.percentage}%)`,
+            // formatter: ({ value }) => `$${(value / 1000).toFixed(0)}K`,
+          },
+        },
+      ],
+    };
+
+    AgCharts.create(options2);
+  </script>
+</html>
