@@ -40,7 +40,7 @@ from rest_framework.permissions import IsAuthenticated
     
 def send_code_to_email(email, code, is_child=False):
     subject = 'کد تایید ثبت‌ نام شما در کش‌فلو'
-    message = f'!سلام\n\nکد تایید شما☺️: {code}'
+    message = f'!سلام\n\nCode: {code}'
     from_email = settings.EMAIL_HOST_USER  
     recipient_list = [email]
 
@@ -237,19 +237,19 @@ class ChildLoginSerializer(serializers.Serializer):
         return data
     
     
-    
+
     
     
     
 class CostSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model: Cost
+        model= Cost
         fields=['id', 'amount', 'cate_choices', 'description', 'date', 'type', 'child']
         read_only_fields=['child']
         
     def validate(self, data):
-        request = self.contexr.get('request')
+        request = self.context.get('request')
         
         # 1. Verify Token from header 
         auth_header = request.headers.get('Authorization', '')
@@ -257,19 +257,23 @@ class CostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("ابتدا باید وارد شوید.")
         
         token = auth_header.split(' ')[1]
+        print("THISSS ISSS THE STOREDDD TOOKEENNSERIALIZER: \n", token)
         child_id_from_token = cache.get(f"child_token_{token}")
+        print("THIS ISS THEE CHILD_IIDDD FROM THE TOKEN:\n", child_id_from_token)
         
         if not child_id_from_token:
              raise serializers.ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید")
          
         self.context['child_id_from_token'] = child_id_from_token
         
-        def create(self, validated_data):
-            child_id = self.context.get('child_id_from_token')
-            child = child.objects.get(id=child_id)
-            
-            cost = Cost.objects.create(
-                child=child,
-                **validated_data
-            )
-            return cost
+        return data 
+        
+    def create(self, validated_data):
+        child_id = self.context.get('child_id_from_token')
+        child = Child.objects.get(id=child_id)
+        
+        cost = Cost.objects.create(
+            child=child,
+            **validated_data
+        )
+        return cost

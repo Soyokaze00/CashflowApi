@@ -94,7 +94,11 @@ class ChildVerificationCodeView(generics.CreateAPIView):
         # Store verified email in session
         request.session['child_verified_email'] = serializer.validated_data['email']
         
-        return Response({"message": "ایمیل فرزند با موفقیت تایید شد"})
+        return Response(
+            {
+                "message": "ایمیل فرزند با موفقیت تایید شد"
+            }
+        )
 
     
 # Step 3: Confirm username and password + create ==> SIGN UP
@@ -169,24 +173,28 @@ class ChildLoginView(generics.GenericAPIView):
     permission_classes = ()
     
     def post(self, request, *args, **kwargs):
-        # data = self.get_serializer(data=request.data)
-        # data.is_valid(raise_exception=True)
+       
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        child = serializer.validated_data['user']
-        token = secrets.token_urlsafe(32) 
-        cache.set(f"child_token_{token}", child.id, timeout=3600)
         
-        print(f"Generated token: {token}")
-        print(f"STORED IN CACHE: child_token_{token} -> {child.id}")  # Debug
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
         
         try:
-            child = Child.objects.get(email=serializer.validated_data['email'])
+            child = Child.objects.get(email=email)
         except Child.DoesNotExist:
             return Response({"detail": "ایمیل اشتباه است."}, status=status.HTTP_401_UNAUTHORIZED)
         
-        if not check_password(serializer.validated_data['password'], child.password):
+        if not check_password(password, child.password):
             return Response({"details": "رمز عبور اشتباه است"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        child = serializer.validated_data['user']
+        token = secrets.token_urlsafe(32) 
+        cache.set(f"child_token_{token}", child.id, timeout=36000) #for 10 Hours
+        
+        print(f"Generated token: {token}")
+        print(f"STORED IN CACHE: child_token_{token} -> {child.username}")  
+        
         return Response(
             {
                 "child_username": child.username,
@@ -194,7 +202,7 @@ class ChildLoginView(generics.GenericAPIView):
                 "child_id": child.id,
                 "token": token,
                 "email": child.email,
-                "username": child.username
+               
             },
             status=status.HTTP_200_OK
         )
@@ -205,10 +213,24 @@ class ChildLoginView(generics.GenericAPIView):
 
 class CostView(generics.ListCreateAPIView):
     serializer_class = CostSerializer
-    permission_classes = [permissions.AllowAny]
+    authentication_classes = ()  
+    permission_classes = ()
     
     def get_queryset(self):
-        child_id = self.kwargs['child_id']
+        
+        #Getting the token from the header
+        
+        auth_header = self.request.headers.get('Authorization', '')
+        if not auth_header.startswith('Token '):
+            return Cost.objects.none()
+        
+        token = auth_header.split(' ')[1]
+        print("THISSS ISSS THE STOREDDD TOOKEENNViewwww: \n", token)
+        child_id = cache.get(f"child_token_{token}")
+        
+        if not child_id:
+            return Cost.objects.none()
+        
         child = Child.objects.get(id=child_id)
         
         filter_option = self.request.query_params.get('filter', 'all')
@@ -236,8 +258,6 @@ class CostView(generics.ListCreateAPIView):
             return child.costs.all().order_by('-date')
         
     def perform_create(self, serializer):
-        child_id = self.kwargs['child_id']
-        child = Child.objects.get(id=child_id)
 
         persian_date = self.request.data.get('date')
         try:
@@ -245,7 +265,7 @@ class CostView(generics.ListCreateAPIView):
         except Exception:
             raise ValidationError({"date": "فرمت تاریخ اشتباه است!"})
 
-        serializer.save(child=child)
+        serializer.save()
 
 
 #..........................................................................................................................

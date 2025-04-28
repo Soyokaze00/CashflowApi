@@ -18,13 +18,13 @@ urlpatterns=[
     path('api/child/login/', views.ChildLoginView.as_view(), name='child-login'),
     
     
-    path('api/costs', views.CostView.as_view, name='child-costs'),
+    path('api/costs', views.CostView.as_view(), name='child-costs'),
     
     
     
     
     path("", views.landing, name="landing"),
-    path("parent/signup/", views.parent_signup, name="parent_signup"),
+    path("parent/signup/", views.parent_signup, name="parent_signup"), 
     path("parent/login/", views.parent_login, name="parent_login"),
     path("child/signup/<int:parent_id>/", views.child_signup, name="child_signup"),
     path("child/login/", views.child_login, name="child_login"),
