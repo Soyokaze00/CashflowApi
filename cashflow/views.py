@@ -4,9 +4,12 @@ from rest_framework import status, generics, permissions
 from django.contrib.auth.hashers import check_password
 from .models import Child, Cost, Parent, Goals
 from rest_framework.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, Sum
+from django.shortcuts import get_object_or_404
 import jdatetime
+import secrets
 from django.utils.timezone import now
+from rest_framework.views import APIView
 from .serializers import (
     EmailVerificationSerializer,
     ParentSignupSerializer,
@@ -19,14 +22,6 @@ from .serializers import (
 )
 
 
-# from rest_framework.exceptions import AuthenticationFailed
-# from rest_framework.views import APIView
-# from rest_framework.authtoken.models import Token
-# from rest_framework.permissions import AllowAny
-# from django.contrib.auth import authenticate
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-
 #*****************************************************************************************************
 
 from datetime import timedelta
@@ -37,19 +32,17 @@ from django import forms
 from decimal import Decimal
 from django.contrib import messages
 from .forms import *
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 
 from django.utils.timezone import now
 from django.core.mail import send_mail
 from django.conf import settings
-# from .models import EmailConfirmation
-# from django.http import JsonResponse
 
-from django.db.models import Q, Sum
-import jdatetime
+
+
+
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-import secrets
 
 #*****************************************************************************************************
 
@@ -136,7 +129,6 @@ class ChildSignupView(generics.CreateAPIView):
 
 
 #Login
-
 class ParentLoginView(generics.GenericAPIView):
     serializer_class = ParentLoginSerializer
     authentication_classes = ()  # No auth needed to login
@@ -209,8 +201,7 @@ class ChildLoginView(generics.GenericAPIView):
 
 
 
-#CostView
-
+#CostApiView
 class CostView(generics.ListCreateAPIView):
     serializer_class = CostSerializer
     authentication_classes = ()  
@@ -266,6 +257,86 @@ class CostView(generics.ListCreateAPIView):
             raise ValidationError({"date": "فرمت تاریخ اشتباه است!"})
 
         serializer.save()
+
+
+#DetailApiView
+class DetailsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request):
+        auth_header = request.headers.get('Authorization', '')
+        if not auth_header.startswith("Token "):
+            return Response(
+                {
+                    "error": "توکن نامعتبر لطفا دوباره وارد شوید.",
+                },
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        token = auth_header.split(" ")[1]
+        child_id = cache.get(f"child_token_{token}")
+        if not child_id:
+            return Response({"error": "احراز هویت نامعتبر - لطفا دوباره وارد شوید."}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            
+        child=get_object_or_404(Child, id=child_id)
+  
+        #Fetch their costs categorized
+        
+        needs = Cost.objects.filter(child=child, type='expense', cate_choices='needs',).order_by('-date')
+        wants = Cost.objects.filter(child=child, type='expense', cate_choices='wants',).order_by('-date')
+        others = Cost.objects.filter(child=child, type='expense', cate_choices='else',).order_by('-date')
+        
+        # Calculate total sums
+        total_needs = needs.aggregate(Sum('amount'))['amount__sum'] or 0
+        total_wants = wants.aggregate(Sum('amount'))['amount__sum'] or 0
+        total_others = others.aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        #Return the JSON
+        
+        return Response(
+            {
+                'child': {
+                    'id': child_id,
+                    'username': child.username,
+                    'email': child.email,
+                },
+                'needs': [
+                    {
+                        'id': cost.id,
+                        'amount': cost.amount,
+                        'description': cost.description,
+                        'date': cost.date,
+                        'type': cost.type
+                    } for cost in needs
+                ],
+                'wants': [
+                    {
+                        'id': cost.id,
+                        'amount': cost.amount,
+                        'description': cost.description,
+                        'date': cost.date,
+                        'type': cost.type
+                    } for cost in wants
+                ],
+                'others': [
+                    {
+                        'id': cost.id,
+                        'amount': cost.amount,
+                        'description': cost.description,
+                        'date': cost.date,
+                        'type': cost.type
+                    } for cost in others
+                ],
+                'total_needs': total_needs,
+                'total_wants': total_wants,
+                'total_others': total_others
+            },
+            status=status.HTTP_200_OK
+        )
+
+
 
 
 #..........................................................................................................................

@@ -10,34 +10,7 @@ from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 
 
-# class ParentSignupSerializer(serializers.ModelSerializer):
-    # class Meta:
-    #     model: Parent
-    #     fields=['username', 'password', 'email']
-    #     extra_kwargs = {
-    #         'password': {'write_only': True}
-    #     }
-        
-    # def validate_email(self, value):
-    #     if Parent.objects.filter(email=value).exists():
-    #         raise serializers.ValidationError("این ایمیل قبلا ثبت شده است.")
-    #     return value
-    
-    # def validate_username(self, value):
-    #     if Parent.objects.filter(username=value).exists():
-    #         raise serializers.ValidationError("این نام کاربری قبلا ثبت شده است.")
-    #     return value
-    
-    # def create(self, validated_data):
-    #     validated_data['password']=make_password(validated_data['password'])
-    #     return Parent.objects.create(**validated_data)
-    
-    
-    # class ParentLoginSerializer(serializers.Serializer):
-    #     email = serializers.EmailField()
-    #     password = serializers.Charfield(write_only=True)
-    
-    
+
 def send_code_to_email(email, code, is_child=False):
     subject = 'کد تایید ثبت‌ نام شما در کش‌فلو'
     message = f'!سلام\n\nCode: {code}'
@@ -97,7 +70,7 @@ class ParentVerificationCodeSerializer(serializers.Serializer):
         print("THISS ISS CACHEEDD_COODEE:\n", cached_code)
         print("THISSS ISS COODEEE:\n", data['code'])
         if cached_code != data['code']:
-            raise serializers.ValidationError({"code": "کد تایید نامعتبر است"})
+            raise serializers.ValidationError({"error": "کد تایید نامعتبر است"})
         return data
     def create(self, validated_data):
         # No actual creation needed - just return the validated data
@@ -109,6 +82,8 @@ class ParentSignupSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
     
     def validate(self, data):
+        print("Session Data: ", self.context['request'].session.keys())  # Print all session keys
+        print("Verified Email: ", self.context['request'].session.get('verified_email')) 
         if Parent.objects.filter(username=data['username']).exists():
             raise serializers.ValidationError("این نام کاربری موجود است.")
         
@@ -159,7 +134,7 @@ class ChildVerificationCodeSerializer(serializers.Serializer):
         print("THISS ISS CACHEEDD_COODEE:\n", cached_code)
         print("THISSS ISS COODEEE:\n", data['code'])
         if cached_code != data['code']:
-            raise serializers.ValidationError("کد تایید نامعتبر است")
+            raise serializers.ValidationError({"error": "کد تایید نامعتبر است"})
         return data
     def create(self, validated_data):
         # No actual creation needed - just return the validated data

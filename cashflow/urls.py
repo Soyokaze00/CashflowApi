@@ -19,6 +19,7 @@ urlpatterns=[
     
     
     path('api/costs', views.CostView.as_view(), name='child-costs'),
+    path('api/details', views.DetailsView.as_view(), name='child-details'),
     
     
     
