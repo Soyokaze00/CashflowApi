@@ -71,7 +71,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_CREDENTIALS = True
 
 
 MIDDLEWARE = [
@@ -86,6 +86,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'CF.urls'
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 TEMPLATES = [
     {
