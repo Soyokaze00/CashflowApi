@@ -244,11 +244,19 @@ class CostSerializer(serializers.ModelSerializer):
         return data 
         
     def create(self, validated_data):
-        child_id = self.context.get('child_id_from_token')
-        child = Child.objects.get(id=child_id)
-        
-        cost = Cost.objects.create(
-            child=child,
-            **validated_data
-        )
-        return cost
+        try:
+            child_id = self.context.get('child_id_from_token')
+            if not child_id:
+                raise serializers.ValidationError("No child associated with this token")
+                
+            child = Child.objects.get(id=child_id)
+            
+            return Cost.objects.create(
+                child=child,
+                **validated_data
+            )
+            
+        except Child.DoesNotExist:
+            raise serializers.ValidationError("Child not found")
+        except Exception as e:
+            raise serializers.ValidationError(str(e))

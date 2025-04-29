@@ -10,6 +10,8 @@ import jdatetime
 import secrets
 from django.utils.timezone import now
 from rest_framework.views import APIView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .serializers import (
     EmailVerificationSerializer,
     ParentSignupSerializer,
@@ -141,7 +143,7 @@ class ParentLoginView(generics.GenericAPIView):
         parent = serializer.validated_data['user']
         
         token = secrets.token_urlsafe(32) 
-        cache.set(f"parent_token_{token}", parent.id, timeout=3600)
+        cache.set(f"parent_token_{token}", parent.id, timeout=60*60*24*7)
         
         print(f"Generated token: {token}")
         print(f"STORED IN CACHE: parent_token_{token} -> {parent.id}")  # Debug
@@ -182,7 +184,7 @@ class ChildLoginView(generics.GenericAPIView):
         
         child = serializer.validated_data['user']
         token = secrets.token_urlsafe(32) 
-        cache.set(f"child_token_{token}", child.id, timeout=36000) #for 10 Hours
+        cache.set(f"child_token_{token}", child.id, timeout=60*60*24*7) #for 7 days
         
         print(f"Generated token: {token}")
         print(f"STORED IN CACHE: child_token_{token} -> {child.username}")  
@@ -199,16 +201,17 @@ class ChildLoginView(generics.GenericAPIView):
             status=status.HTTP_200_OK
         )
 
-
+from rest_framework.permissions import AllowAny
 
 #CostApiView
+# @method_decorator(csrf_exempt, name='dispatch')
 class CostView(generics.ListCreateAPIView):
     serializer_class = CostSerializer
     authentication_classes = ()  
-    permission_classes = ()
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
-        
+        print("$$$$$$$$$$$$$$$$")
         #Getting the token from the header
         
         auth_header = self.request.headers.get('Authorization', '')
@@ -249,6 +252,7 @@ class CostView(generics.ListCreateAPIView):
             return child.costs.all().order_by('-date')
         
     def perform_create(self, serializer):
+        print("PERRFORRRMMM_CREEEATTE")
 
         persian_date = self.request.data.get('date')
         try:
