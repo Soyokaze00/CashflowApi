@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password, check_password
-from .models import Parent, Child, Cost
+from .models import Parent, Child, Cost, Goals
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.cache import cache
@@ -212,10 +212,6 @@ class ChildLoginSerializer(serializers.Serializer):
         return data
     
     
-
-    
-    
-    
 class CostSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -260,3 +256,13 @@ class CostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Child not found")
         except Exception as e:
             raise serializers.ValidationError(str(e))
+        
+        
+        
+class GoalSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        
+        model = Goals
+        fields = ['id', 'goal', 'goal_amount', 'savings']
+  

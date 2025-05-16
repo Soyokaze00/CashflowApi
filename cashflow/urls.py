@@ -17,9 +17,14 @@ urlpatterns=[
     path('api/child/signup/confirm/', views.ChildSignupView.as_view(),  name='child-signup-confirm'),
     path('api/child/login/', views.ChildLoginView.as_view(), name='child-login'),
     
-    
+    #Cost & Detail
     path('api/costs', views.CostView.as_view(), name='child-costs'),
     path('api/details', views.DetailsView.as_view(), name='child-details'),
+    
+    #Goal
+    path('api/goals/', views.GoalAPIView.as_view(), name='goals-api'),  # GET, POST
+    path('api/goals/<int:pk>/', views.GoalDetailAPIView.as_view(), name='goal-detail-api'), # PATCH, DELETE
+    
     
     
     

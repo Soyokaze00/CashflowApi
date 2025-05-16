@@ -7,9 +7,11 @@ from rest_framework.exceptions import ValidationError
 from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 import jdatetime
+from rest_framework.permissions import AllowAny
 import secrets
 from django.utils.timezone import now
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .serializers import (
@@ -21,6 +23,7 @@ from .serializers import (
     ParentVerificationCodeSerializer,
     ChildVerificationCodeSerializer,
     CostSerializer,
+    GoalSerializer,
 )
 
 
@@ -185,6 +188,7 @@ class ChildLoginView(generics.GenericAPIView):
         child = serializer.validated_data['user']
         token = secrets.token_urlsafe(32) 
         cache.set(f"child_token_{token}", child.id, timeout=60*60*24*7) #for 7 days
+        print("CACHED RIGHT AFTER SET?", cache.get(f"child_token_{token}"))
         
         print(f"Generated token: {token}")
         print(f"STORED IN CACHE: child_token_{token} -> {child.username}")  
@@ -201,10 +205,9 @@ class ChildLoginView(generics.GenericAPIView):
             status=status.HTTP_200_OK
         )
 
-from rest_framework.permissions import AllowAny
+
 
 #CostApiView
-# @method_decorator(csrf_exempt, name='dispatch')
 class CostView(generics.ListCreateAPIView):
     serializer_class = CostSerializer
     authentication_classes = ()  
@@ -342,6 +345,71 @@ class DetailsView(APIView):
 
 
 
+#Goals api view
+
+class GoalAPIView(APIView):
+    serializer_class = GoalSerializer
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get_child_from_token(self):
+        auth_header = self.request.headers.get('Authorization', '')
+        print("Authorization headerrrrrrrrrr:", auth_header)
+        if  not auth_header.startswith('Token '):
+            raise AuthenticationFailed("توکن نامعتبر لطفا دوباره وارد شوید.")
+        
+        token = auth_header.split(' ')[1]
+        print("Extracted tokeeeeeeeeeen:", token)
+        child_id = cache.get(f"child_token_{token}")
+        print("Found child IDDDDDDDDDD:", child_id)
+        
+        if not child_id:
+            raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
+        try:
+            return Child.objects.get(id=child_id)
+        except Child.DoesNotExist:
+            raise ValidationError("کودک یافت نشد.")
+    
+    def get(self, request):
+        child = self.get_child_from_token()
+        goals = child.goals.all().order_by('-id')
+        serializer = GoalSerializer(goals, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        child = self.get_child_from_token()
+        serializer = GoalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(child=child)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+
+class GoalDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = GoalSerializer
+    authentication_classes = ()
+    permission_classes = ()
+
+    def get_child_from_token(self):
+        auth_header = self.request.headers.get('Authorization', '')
+        if not auth_header.startswith('Token '):
+            raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
+
+        token = auth_header.split(' ')[1]
+        child_id = cache.get(f"child_token_{token}")
+        if not child_id:
+            raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
+        try:
+            return Child.objects.get(id=child_id)
+        except Child.DoesNotExist:
+            raise ValidationError("کودک یافت نشد.")
+
+    def get_object(self):
+        child = self.get_child_from_token()
+        goal = get_object_or_404(Goals, id=self.kwargs['pk'], child=child)
+        return goal
+        
+        
 
 #..........................................................................................................................
 
