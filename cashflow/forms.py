@@ -4,42 +4,7 @@ from .models import Parent, Child, Cost, Goals
 from django.core.exceptions import ValidationError
 #...................................................................................................
 
-class parentSignupForm(forms.ModelForm):
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور خود را وارد کنید.'}),
-        error_messages={'required': 'لطفاً رمز عبور خود را وارد کنید.'},
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={
-            'placeholder': 'ایمیل خود را وارد کنید',
-            'title': 'لطفاً یک ایمیل معتبر وارد کنید.',
-        }),
-        error_messages={
-            'required': 'لطفاً ایمیل خود را وارد کنید.',
-            'invalid': 'ایمیل وارد شده معتبر نیست.',
-        }
-    )
-    username = forms.CharField(
-        error_messages={
-            'required': 'نام کاربری الزامی است.',
-        }
-    )
-    class Meta:
-        model=Parent
-        fields = ['username', 'password', 'email']
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if Child.objects.filter(username=username).exists():
-            raise forms.ValidationError('کاربری با این نام کاربری قبلاً ثبت شده است.')
-        return username
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not email:
-            raise forms.ValidationError("لطفاً ایمیل خود را وارد کنید.")
-        return email
 
-    
-#......................................................................................................
 
 class costsForm(forms.ModelForm):
 
@@ -100,7 +65,6 @@ class costsForm(forms.ModelForm):
         #     return cleaned_data
 
 
-
 #.....................................................................................................
 
 class goalsForm(forms.ModelForm):
@@ -130,88 +94,7 @@ class GoalUpdateForm(forms.ModelForm):
         
 
 
-#......................................................................................................
 
-class ChildSignupForm(forms.ModelForm):
-    
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور خود را وارد کنید.'}),
-        error_messages={'required': 'لطفاً رمز عبور خود را وارد کنید.'},
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={
-            'placeholder': 'ایمیل خود را وارد کنید',
-            'title': 'لطفاً یک ایمیل معتبر وارد کنید.',
-        }),
-        error_messages={
-            'required': 'لطفاً ایمیل خود را وارد کنید.',
-            'invalid': 'ایمیل وارد شده معتبر نیست.',
-        }
-    )
-    # verification_code = forms.CharField(
-    #     error_messages={
-    #         'required': 'کد تأیید الزامی است.',
-    #     }
-    # )
-    username = forms.CharField(
-        error_messages={
-            'required': 'نام کاربری الزامی است.',
-        }
-    )
-    class Meta:
-        model=Child
-        fields = ['username', 'password', 'email']
-    
-    
-    # class Meta:
-    #     model = Child
-    #     fields = ['username', 'password',]
-    #     error_messages = {
-    #         'username': {
-    #             'required': 'لطفاً یک نام کاربری وارد کنید.',
-    #         },
-    #         'password': {
-    #             'required': 'لطفاً رمز عبور خود را وارد کنید.',
-    #         }
-    #     }
-
-    # def clean_username(self):
-    #     username = self.cleaned_data.get('username')
-    #     if Child.objects.filter(username=username).exists():
-    #         raise forms.ValidationError('کاربری با این نام کاربری قبلاً ثبت شده است.')
-    #     return username
-
-#......................................................................................................
-
-class ParentLoginForm(forms.Form):
-    email = forms.CharField(
-        required=True,
-        label='Email',
-        error_messages={'required': 'لطفاً ایمیل خود را وارد کنید.'}
-        )
-    password = forms.CharField(
-        required=True,
-        widget=forms.PasswordInput,
-        label='Password',
-        error_messages={'required': 'لطفاً رمز عبور خود را وارد کنید.'}
-    )
-
-#......................................................................................................
-    
-class ChildLoginForm(forms.Form):
-    email = forms.CharField(
-        required=True,
-        label='Email',
-        error_messages={'required': 'لطفاً ایمیل خود را وارد کنید.'}
-        )
-    password = forms.CharField(
-        required=True,
-        widget=forms.PasswordInput,
-        label='Password',
-        error_messages={'required': 'لطفاً رمز عبور خود را وارد کنید.'}
-    )
-
-        
 
 
 

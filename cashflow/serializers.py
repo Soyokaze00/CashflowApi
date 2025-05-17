@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 
-
+#/////////////////////////////////////////////////////////////////////////////////
 
 def send_code_to_email(email, code, is_child=False):
     subject = 'کد تایید ثبت‌ نام شما در کش‌فلو'
@@ -256,13 +256,10 @@ class CostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Child not found")
         except Exception as e:
             raise serializers.ValidationError(str(e))
+               
         
-        
-        
-class GoalSerializer(serializers.ModelSerializer):
-    
+class GoalSerializer(serializers.ModelSerializer):  
     class Meta:
-        
         model = Goals
         fields = ['id', 'goal', 'goal_amount', 'savings']
   
