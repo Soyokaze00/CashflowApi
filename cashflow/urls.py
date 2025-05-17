@@ -25,6 +25,9 @@ urlpatterns=[
     path('api/goals/', views.GoalAPIView.as_view(), name='goals-api'),  # GET, POST
     path('api/goals/<int:pk>/', views.GoalDetailAPIView.as_view(), name='goal-detail-api'), # PATCH, DELETE
     
+    #Dashboards
+    path('api/child/dashboard', views.ChildDashboardAPIView.as_view(), name='child-dashboard-api'),
+    
     
     
     

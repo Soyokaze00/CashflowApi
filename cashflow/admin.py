@@ -21,6 +21,7 @@ class CostAdmin(admin.ModelAdmin):
 
 class GoalAdmin(admin.ModelAdmin):
     list_display=('id', 'goal', 'savings', 'goal_amount', 'child__username')
+    list_filter = ('child__username',)
 
 admin.site.register(Parent, ParentAdmin)
 admin.site.register(Child, ChildAdmin)

@@ -346,7 +346,6 @@ class DetailsView(APIView):
 
 
 #Goals api view
-
 class GoalAPIView(APIView):
     serializer_class = GoalSerializer
     authentication_classes = ()
@@ -408,7 +407,76 @@ class GoalDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         child = self.get_child_from_token()
         goal = get_object_or_404(Goals, id=self.kwargs['pk'], child=child)
         return goal
+    
+    
+    
+#Child_Dashboard api View
+
+class ChildDashboardAPIView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get_child_from_token(self):
+        auth_header = self.request.headers.get('Authorization', '')
+        if not auth_header.startswith('Token '):
+            raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
         
+        
+        token = auth_header.split(' ')[1]
+        child_id = cache.get(f'child_token_{token}')
+        if not child_id:
+            raise ValidationError("احراز هویت نامعتبر\nلطفا دوباره وارد شوید.")
+        try:
+            return Child.objects.get(id=child_id)
+        except Child.DoesNotExist:
+            raise ValidationError("کودک یافت نشد.")
+        
+        
+    def get(self, request):
+        
+        child = self.get_child_from_token()
+        
+        persian_today = jdatetime.date.today()
+        start_day = persian_today
+        start_week = persian_today - jdatetime.timedelta(days=persian_today.weekday())
+        start_month = persian_today.replace(day=1)
+        
+        start_day_str = start_day.strftime('%Y-%m-%d')
+        start_week_str = start_week.strftime('%Y-%m-%d')
+        start_month_str = start_month.strftime('%Y-%m-%d')
+        print("start_day_strrrrrrrrrrrrr", start_day_str)
+        
+        daily_costs = child.costs.filter(date=start_day_str, type='expense')
+        print("DAILYYYY:", daily_costs)
+        weekly_costs = child.costs.filter(date__gte=start_week_str, type='expense')
+        monthly_costs = child.costs.filter(date__gte=start_month_str, type='expense')
+        
+        daily_total = daily_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
+        weekly_total = weekly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
+        monthly_total = monthly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)      
+        
+        recent_costs = Cost.objects.filter(child=child).order_by('-date')[:10]
+        recent_costs_serialized = CostSerializer(recent_costs, many=True).data
+        
+        top_goals = child.goals.all()[:3]
+        goals_data = []
+        for goal in top_goals:
+            goals_data.append({
+                'id': goal.id,
+                'goal': goal.goal,
+                'goal_amount': goal.goal_amount,
+                'savings': goal.savings,
+            })
+            
+        return Response({
+            'persian_today': persian_today.strftime('%Y-%m-%d'),
+            'daily_total': daily_total,
+            'weekly_total': weekly_total,
+            'monthly_total': monthly_total,
+            'recent_costs': recent_costs_serialized,
+            'top_goals': goals_data,
+        })
+    
         
 
 #..........................................................................................................................
