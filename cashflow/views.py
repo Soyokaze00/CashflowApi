@@ -9,9 +9,18 @@ from django.shortcuts import get_object_or_404
 import jdatetime
 from rest_framework.permissions import AllowAny
 import secrets
+from datetime import timedelta
+import json
 from django.utils.timezone import now
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
+from decimal import Decimal
+from django.contrib import messages
+from .forms import *
+from django.shortcuts import render, redirect
+from django.utils.timezone import now
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .serializers import (
@@ -26,28 +35,6 @@ from .serializers import (
     GoalSerializer,
 )
 
-
-#*****************************************************************************************************
-
-from datetime import timedelta
-import json
-import random
-
-from django import forms
-from decimal import Decimal
-from django.contrib import messages
-from .forms import *
-from django.shortcuts import render, redirect
-
-from django.utils.timezone import now
-
-from django.conf import settings
-
-
-
-
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
 
 #*****************************************************************************************************
 
@@ -266,6 +253,30 @@ class CostView(generics.ListCreateAPIView):
         serializer.save()
 
 
+
+### Getting the Expense sum by category(needs, wants, others)
+def get_expense_sum_by_cate(child):
+    persian_today = jdatetime.date.today()
+        
+    start_month = persian_today.replace(day=1)
+    start_month_str = start_month.strftime('%Y-%m-%d')
+    
+    def get_sum(category):
+        return Cost.objects.filter(
+            child=child,
+            type='expense',
+            cate_choices=category,
+            date__gte=start_month_str
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+    return {
+        'needs': get_sum('needs'),
+        'wants': get_sum('wants'),
+        'other': get_sum('else')
+    }
+
+
+
 #DetailAPIView
 class DetailsView(APIView):
     authentication_classes = ()
@@ -445,6 +456,12 @@ class ChildDashboardAPIView(APIView):
         start_month_str = start_month.strftime('%Y-%m-%d')
         print("start_day_strrrrrrrrrrrrr", start_day_str)
         
+        total_expenses = get_expense_sum_by_cate(child)
+        
+        needs = total_expenses['needs']
+        wants = total_expenses['wants']
+        other = total_expenses['other']
+        
         daily_costs = child.costs.filter(date=start_day_str, type='expense')
         print("DAILYYYY:", daily_costs)
         weekly_costs = child.costs.filter(date__gte=start_week_str, type='expense')
@@ -469,12 +486,17 @@ class ChildDashboardAPIView(APIView):
             
         return Response({
             'persian_today': persian_today.strftime('%Y-%m-%d'),
+            'needs': needs,
+            'wants': wants,
+            'other': other,
             'daily_total': daily_total,
             'weekly_total': weekly_total,
             'monthly_total': monthly_total,
             'recent_costs': recent_costs_serialized,
             'top_goals': goals_data,
         })
+    
+     
     
 #EducationAPIView
 class EducationAPIView(APIView):
@@ -505,26 +527,12 @@ class EducationAPIView(APIView):
         start_month = persian_today.replace(day=1)
         start_month_str = start_month.strftime('%Y-%m-%d')
         
-        needs = Cost.objects.filter(
-            child = child,
-            type = 'expense',
-            cate_choices = 'needs',
-            date__gte = start_month_str
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        total_expenses = get_expense_sum_by_cate(child)
         
-        wants = Cost.objects.filter(
-            child = child,
-            type = 'expense',
-            cate_choices = 'wants',
-            date__gte = start_month_str
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        needs = total_expenses['needs']
+        wants = total_expenses['wants']
+        other = total_expenses['other']
         
-        other = Cost.objects.filter(
-            child = child,
-            type = 'expense',
-            cate_choices = 'else',
-            date__gte = start_month_str
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
         
         income = Cost.objects.filter(
             child = child,
@@ -551,14 +559,6 @@ class EducationAPIView(APIView):
                 actual_wants_perce = 0
                 actual_other_perce = 0
                 
-        print("***************************************************")
-        print("income:", income)
-        print("needs", needs)
-        print("wants", wants)
-        print("other", other)
-        print("actual_needs_perce", actual_needs_perce)
-        print("actual_wants_perce", actual_wants_perce)
-        print("actual_other_perce", actual_other_perce)
         
         needs_difference = abs(needs - supposed_needs_amount)
         wants_difference = abs(wants - supposed_wants_amount)
@@ -584,8 +584,6 @@ class EducationAPIView(APIView):
 
 
 #..........................................................................................................................
-
-
 
 def education(request, child_id):
     child=get_object_or_404(Child, id=child_id)
@@ -677,9 +675,7 @@ def education(request, child_id):
         'other_difference': other_difference,
     }
 
-    return render(request, 'cashflow/education.html', context)
-    
-
+    return render(request, 'cashflow/education.html', context)    
 
 #..........................................................................................................................
 
