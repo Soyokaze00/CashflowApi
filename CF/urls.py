@@ -16,11 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-# from cashflow.views import parent_signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("cashflow/", include("cashflow.urls")),
-    # path('parent/signup/', parent_signup, name='parent_signup')
-
 ]

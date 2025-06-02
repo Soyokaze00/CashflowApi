@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from rest_framework.response import Response
-from rest_framework import status, generics, permissions
+from rest_framework import status, generics
 from django.contrib.auth.hashers import check_password
 from .models import Child, Cost, Parent, Goals
 from rest_framework.exceptions import ValidationError
@@ -10,19 +10,11 @@ import jdatetime
 from rest_framework.permissions import AllowAny
 import secrets
 from datetime import timedelta
-import json
 from django.utils.timezone import now
 from rest_framework.views import APIView
-from rest_framework.exceptions import AuthenticationFailed
 from decimal import Decimal
-from django.contrib import messages
-from .forms import *
-from django.shortcuts import render, redirect
 from django.utils.timezone import now
-from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from .serializers import (
     EmailVerificationSerializer,
     ParentSignupSerializer,
@@ -106,24 +98,26 @@ class ChildSignupView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         
         child = serializer.save()
+        parent = child.parent
+        children = parent.children.all()
         
         return Response(
             {
                 "message": "فرزند با موفقیت ثبت شد.",
                 "child_id": child.id,
-                "parent_id": child.parent.id,
+                "parent_id": parent.id,
                 "child_username": child.username,
-                "parent_username": child.parent.username,
+                "parent": parent.username,
+                'children': [{'id': c.id, 'username': c.username} for c in children],
             },
             status=status.HTTP_201_CREATED
         )
 
 
-
 #Login
 class ParentLoginView(generics.GenericAPIView):
     serializer_class = ParentLoginSerializer
-    authentication_classes = ()  # No auth needed to login
+    authentication_classes = ()  
     permission_classes = ()
     
     def post(self, request, *args, **kwargs):
@@ -193,7 +187,6 @@ class ChildLoginView(generics.GenericAPIView):
         )
 
 
-
 #CostAPIView
 class CostView(generics.ListCreateAPIView):
     serializer_class = CostSerializer
@@ -253,7 +246,6 @@ class CostView(generics.ListCreateAPIView):
         serializer.save()
 
 
-
 ### Getting the Expense sum by category(needs, wants, others)
 def get_expense_sum_by_cate(child):
     persian_today = jdatetime.date.today()
@@ -272,9 +264,46 @@ def get_expense_sum_by_cate(child):
     return {
         'needs': get_sum('needs'),
         'wants': get_sum('wants'),
-        'other': get_sum('else')
+        'others': get_sum('else')
     }
 
+
+###Getting child from token that is in headers
+def get_child_from_token(request):
+    auth_header = request.headers.get('Authorization', '')
+    print("Authorization headerrrrrrrrrr:", auth_header)
+    if  not auth_header.startswith('Token '):
+        raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
+        
+    token = auth_header.split(' ')[1]
+    print("Extracted tokeeeeeeeeeen:", token)
+    child_id = cache.get(f"child_token_{token}")
+    print("Found child IDDDDDDDDDD:", child_id)
+        
+    if not child_id:
+        raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
+    try:
+        return Child.objects.get(id=child_id)
+    except Child.DoesNotExist:
+        raise ValidationError("کودک یافت نشد.")
+
+
+###Getting parent from token that is in headers
+def get_parent_from_token(request):
+    auth_header = request.headers.get('Authorization', '')
+    if not auth_header.startswith('Token '):
+        raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
+    
+    token = auth_header.split(' ')[1]
+    parent_id = cache.get(f"parent_token_{token}")
+    
+    if not parent_id:
+        raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
+    
+    try:
+        return Parent.objects.get(id=parent_id)
+    except Parent.DoesNotExist:
+        raise ValidationError("والد یافت نشد.")
 
 
 #DetailAPIView
@@ -283,40 +312,29 @@ class DetailsView(APIView):
     permission_classes = ()
     
     def get(self, request):
-        auth_header = request.headers.get('Authorization', '')
-        if not auth_header.startswith("Token "):
-            return Response(
-                {
-                    "error": "توکن نامعتبر لطفا دوباره وارد شوید.",
-                },
-                status=status.HTTP_401_UNAUTHORIZED
-            )
 
-        token = auth_header.split(" ")[1]
-        child_id = cache.get(f"child_token_{token}")
-        if not child_id:
-            return Response({"error": "احراز هویت نامعتبر - لطفا دوباره وارد شوید."}, status=status.HTTP_401_UNAUTHORIZED)
-            
-            
-        child=get_object_or_404(Child, id=child_id)
+        child = get_child_from_token(request)   
   
         #Fetch their costs categorized
+        total_expenses = get_expense_sum_by_cate(child)
+        total_needs = total_expenses['needs']
+        total_wants = total_expenses['wants']
+        total_others = total_expenses['others']
         
-        needs = Cost.objects.filter(child=child, type='expense', cate_choices='needs',).order_by('-date')
-        wants = Cost.objects.filter(child=child, type='expense', cate_choices='wants',).order_by('-date')
-        others = Cost.objects.filter(child=child, type='expense', cate_choices='else',).order_by('-date')
+        persian_today = jdatetime.date.today()
         
-        # Calculate total sums
-        total_needs = needs.aggregate(Sum('amount'))['amount__sum'] or 0
-        total_wants = wants.aggregate(Sum('amount'))['amount__sum'] or 0
-        total_others = others.aggregate(Sum('amount'))['amount__sum'] or 0
+        start_month = persian_today.replace(day=1)
+        start_month_str = start_month.strftime('%Y-%m-%d')
+    
         
-        #Return the JSON
-        
+        needs = Cost.objects.filter(child=child, type='expense', date__gte=start_month_str, cate_choices='needs').order_by('-date')
+        wants = Cost.objects.filter(child=child, type='expense', date__gte=start_month_str,  cate_choices='wants').order_by('-date')
+        others=Cost.objects.filter(child=child, type='expense', date__gte=start_month_str,  cate_choices='else').order_by('-date')
+        #Return the JSON 
         return Response(
             {
                 'child': {
-                    'id': child_id,
+                    'id': child.id,
                     'username': child.username,
                     'email': child.email,
                 },
@@ -355,96 +373,46 @@ class DetailsView(APIView):
         )
 
 
-
 #GoalsAPIview
 class GoalAPIView(APIView):
     serializer_class = GoalSerializer
     authentication_classes = ()
     permission_classes = ()
     
-    def get_child_from_token(self):
-        auth_header = self.request.headers.get('Authorization', '')
-        print("Authorization headerrrrrrrrrr:", auth_header)
-        if  not auth_header.startswith('Token '):
-            raise AuthenticationFailed("توکن نامعتبر لطفا دوباره وارد شوید.")
-        
-        token = auth_header.split(' ')[1]
-        print("Extracted tokeeeeeeeeeen:", token)
-        child_id = cache.get(f"child_token_{token}")
-        print("Found child IDDDDDDDDDD:", child_id)
-        
-        if not child_id:
-            raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
-        try:
-            return Child.objects.get(id=child_id)
-        except Child.DoesNotExist:
-            raise ValidationError("کودک یافت نشد.")
-    
     def get(self, request):
-        child = self.get_child_from_token()
+        child = get_child_from_token(request)
         goals = child.goals.all().order_by('-id')
         serializer = GoalSerializer(goals, many=True)
         return Response(serializer.data)
     
     def post(self, request):
-        child = self.get_child_from_token()
+        child = get_child_from_token(request)
         serializer = GoalSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(child=child)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
-
+   
+#GoalsUpdateAPIview
 class GoalDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GoalSerializer
     authentication_classes = ()
     permission_classes = ()
 
-    def get_child_from_token(self):
-        auth_header = self.request.headers.get('Authorization', '')
-        if not auth_header.startswith('Token '):
-            raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
-
-        token = auth_header.split(' ')[1]
-        child_id = cache.get(f"child_token_{token}")
-        if not child_id:
-            raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
-        try:
-            return Child.objects.get(id=child_id)
-        except Child.DoesNotExist:
-            raise ValidationError("کودک یافت نشد.")
-
     def get_object(self):
-        child = self.get_child_from_token()
+        child = get_child_from_token(self.request)
         goal = get_object_or_404(Goals, id=self.kwargs['pk'], child=child)
-        return goal
-    
+        return goal   
     
     
 #Child_DashboardAPIView
 class ChildDashboardAPIView(APIView):
     authentication_classes = ()
     permission_classes = ()
-    
-    def get_child_from_token(self):
-        auth_header = self.request.headers.get('Authorization', '')
-        if not auth_header.startswith('Token '):
-            raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
-        
-        
-        token = auth_header.split(' ')[1]
-        child_id = cache.get(f'child_token_{token}')
-        if not child_id:
-            raise ValidationError("احراز هویت نامعتبر\nلطفا دوباره وارد شوید.")
-        try:
-            return Child.objects.get(id=child_id)
-        except Child.DoesNotExist:
-            raise ValidationError("کودک یافت نشد.")
-        
-        
-    def get(self, request):
-        
-        child = self.get_child_from_token()
+
+    def get(self, request):       
+        child = get_child_from_token(request)
         
         persian_today = jdatetime.date.today()
         start_day = persian_today
@@ -454,16 +422,14 @@ class ChildDashboardAPIView(APIView):
         start_day_str = start_day.strftime('%Y-%m-%d')
         start_week_str = start_week.strftime('%Y-%m-%d')
         start_month_str = start_month.strftime('%Y-%m-%d')
-        print("start_day_strrrrrrrrrrrrr", start_day_str)
         
         total_expenses = get_expense_sum_by_cate(child)
         
         needs = total_expenses['needs']
         wants = total_expenses['wants']
-        other = total_expenses['other']
+        others = total_expenses['others']
         
         daily_costs = child.costs.filter(date=start_day_str, type='expense')
-        print("DAILYYYY:", daily_costs)
         weekly_costs = child.costs.filter(date__gte=start_week_str, type='expense')
         monthly_costs = child.costs.filter(date__gte=start_month_str, type='expense')
         
@@ -488,39 +454,22 @@ class ChildDashboardAPIView(APIView):
             'persian_today': persian_today.strftime('%Y-%m-%d'),
             'needs': needs,
             'wants': wants,
-            'other': other,
+            'others': others,
             'daily_total': daily_total,
             'weekly_total': weekly_total,
             'monthly_total': monthly_total,
             'recent_costs': recent_costs_serialized,
             'top_goals': goals_data,
         })
-    
-     
-    
+       
+       
 #EducationAPIView
 class EducationAPIView(APIView):
     authentication_classes = ()
     permission_classes = ()
-    
-    def get_child_from_token(self):
-        auth_header = self.request.headers.get('Authorization', '')
-        if not auth_header.startswith('Token '):
-            raise ValidationError("توکن نامعتبر لطفا دوباره وارد شوید.")
-        
-        token = auth_header.split(' ')[1]
-        child_id = cache.get(f'child_token_{token}')
-        
-        if not child_id:
-            raise ValidationError("احراز هویت نامعتبر - لطفا دوباره وارد شوید.")
-        
-        try:
-            return Child.objects.get(id=child_id)
-        except Child.DoesNotExist:
-            raise ValidationError("فرزند موجود نیست.")
-    
+
     def get(self, request):
-        child = self.get_child_from_token()
+        child = get_child_from_token(request)
         
         persian_today = jdatetime.date.today()
         
@@ -531,7 +480,7 @@ class EducationAPIView(APIView):
         
         needs = total_expenses['needs']
         wants = total_expenses['wants']
-        other = total_expenses['other']
+        others = total_expenses['others']
         
         
         income = Cost.objects.filter(
@@ -542,501 +491,133 @@ class EducationAPIView(APIView):
         
         supposed_needs_amount = (Decimal(income) * Decimal(50)) / Decimal(100)
         supposed_wants_amount = (Decimal(income) * Decimal(30)) / Decimal(100)
-        supposed_other_amount = (Decimal(income) * Decimal(20)) / Decimal(100)
+        supposed_others_amount = (Decimal(income) * Decimal(20)) / Decimal(100)
         
         if(income>0):
             actual_needs_perce = round((needs / income) * 100) if income > 0 else 0
             actual_wants_perce = round((wants / income) * 100) if income > 0 else 0
-            actual_other_perce = round((other / income) * 100) if income > 0 else 0
+            actual_others_perce = round((others / income) * 100) if income > 0 else 0
         else:
-            total_sum = needs + wants + other
+            total_sum = needs + wants + others
             if total_sum > 0: 
                 actual_needs_perce = round((needs / total_sum) * 100, 0)
                 actual_wants_perce = round((wants / total_sum) * 100, 0)
-                actual_other_perce = round((other / total_sum) * 100, 0)
+                actual_others_perce = round((others / total_sum) * 100, 0)
             else:
                 actual_needs_perce = 0
                 actual_wants_perce = 0
-                actual_other_perce = 0
+                actual_others_perce = 0
                 
         
         needs_difference = abs(needs - supposed_needs_amount)
         wants_difference = abs(wants - supposed_wants_amount)
-        other_difference = abs(other - supposed_other_amount)
+        others_difference = abs(others - supposed_others_amount)
         
         return Response({
             'child_id': child.id,
             'income': float(income),
             'needs': float(needs),
             'wants': float(wants),
-            'other': float(other),
+            'others': float(others),
             'supposed_needs_amount': float(supposed_needs_amount),
             'supposed_wants_amount': float(supposed_wants_amount),
-            'supposed_other_amount': float(supposed_other_amount),
+            'supposed_other_amount': float(supposed_others_amount),
             'actual_needs_perce': actual_needs_perce,
             'actual_wants_perce': actual_wants_perce,
-            'actual_other_perce': actual_other_perce,
+            'actual_other_perce': actual_others_perce,
             'needs_difference': float(needs_difference),
             'wants_difference': float(wants_difference),
-            'other_difference': float(other_difference),
+            'others_difference': float(others_difference),
         })
         
-
-
-#..........................................................................................................................
-
-def education(request, child_id):
-    child=get_object_or_404(Child, id=child_id)
-    persian_today=jdatetime.date.today()
-
-    current_month_start=persian_today.replace(day=1)
-    next_month_start = (current_month_start + timedelta( days = 31 )).replace(day=1)
-    current_month_end = next_month_start - timedelta( days = 1 )
-
-    needs = Cost.objects.filter(
-        child = child,
-        type = 'expense',
-        cate_choices = 'needs',
-        date__gte = current_month_start,
-        date__lte = current_month_end,
-    ).aggregate(Sum('amount'))['amount__sum'] or 0
-
-    wants = Cost.objects.filter(
-        child = child,
-        type = 'expense',
-        cate_choices = 'wants',
-        date__gte = current_month_start,
-        date__lte = current_month_end,
-    ).aggregate(Sum('amount'))['amount__sum'] or 0
-
-    other = Cost.objects.filter(
-        child = child,
-        type = 'expense',
-        cate_choices = 'else',
-        date__gte = current_month_start,
-        date__lte = current_month_end,
-    ).aggregate(Sum('amount'))['amount__sum'] or 0
-
-    income = Cost.objects.filter(
-        child=child,
-        type = 'income',
-        date__gte = current_month_start,
-        date__lte = current_month_end,
-    ).aggregate(Sum('amount'))['amount__sum'] or 0
-
-    supposed_needs_amount = (Decimal(income) * Decimal(50)) / Decimal(100)
-    supposed_wants_amount = (Decimal(income) * Decimal(30)) / Decimal(100)
-    supposed_other_amount = (Decimal(income) * Decimal(20)) / Decimal(100)
-    if(income>0):
-        actual_needs_perce = round((needs / income) * 100) if income > 0 else 0
-        actual_wants_perce = round((wants / income) * 100) if income > 0 else 0
-        actual_other_perce = round((other / income) * 100) if income > 0 else 0
-    else:
-        total_sum = needs + wants + other
-        if total_sum > 0: 
-            actual_needs_perce = round((needs / total_sum) * 100, 0)
-            actual_wants_perce = round((wants / total_sum) * 100, 0)
-            actual_other_perce = round((other / total_sum) * 100, 0)
-        else:
-            actual_needs_perce = 0
-            actual_wants_perce = 0
-            actual_other_perce = 0
-    print("***************************************************")
-    print("income:", income)
-    print("needs", needs)
-    print("wants", wants)
-    print("other", other)
-    print("actual_needs_perce", actual_needs_perce)
-    print("actual_wants_perce", actual_wants_perce)
-    print("actual_other_perce", actual_other_perce)
-
-    needs_difference = abs(needs - supposed_needs_amount)
-    wants_difference = abs(wants - supposed_wants_amount)
-    other_difference = abs(other - supposed_other_amount)
-
+        
+#ParentDashboardAPIView
+class ParentDashboardAPIView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
     
+    def get(self, request):
+        parent = get_parent_from_token(request)
+        children = parent.children.all()
+        if not children:
+            return Response({"detail": "کودکی برای این والد ثبت نشده است."}, status=404)
 
-    
-
-    context = {
-        'child': child,
-        'needs': needs,
-        'wants': wants,
-        'other': other,
-        'income': income,
-        'supposed_needs_amount': supposed_needs_amount,
-        'supposed_wants_amount': supposed_wants_amount,
-        'supposed_other_amount': supposed_other_amount,
-        'actual_needs_perce': actual_needs_perce,
-        'actual_wants_perce': actual_wants_perce,
-        'actual_other_perce': actual_other_perce,
-        'needs_difference': needs_difference,
-        'wants_difference': wants_difference,
-        'other_difference': other_difference,
-    }
-
-    return render(request, 'cashflow/education.html', context)    
-
-#..........................................................................................................................
-
-
-
-def landing(request):
-    return render(request, 'cashflow/landing.html')
-
-
-#.........................................................................................................................
-
-
-def goals(request, child_id):
-    child=get_object_or_404(Child, id=child_id)
-    goals=child.goals.all()
-    
-
-    goal_to_edit=None
-    edit_goal_id=request.POST.get("edit_goal_id")
-
-    if edit_goal_id:
-        goal_to_edit=goals.filter(id=edit_goal_id).first()
-        if not goal_to_edit:
-            messages.error(request, "Goal not found")
-            return redirect('goals', child_id = child_id)
-        
-        
-    goal_form = goalsForm()
-    update_form = GoalUpdateForm(instance=goal_to_edit)
-        
-
-        
-    if request.method == "POST":
-        print("Form submitted with POST data:", request.POST) 
-
-        if 'add_goal' in request.POST:
-            goal_form = goalsForm(request.POST)
-            if goal_form.is_valid():
-                goal = goal_form.save(commit=False)
-                goal.child=child
-                print("Goals for child:", child.goals.all())
-                goal.save()
-                messages.success(request, "Goal added successfully.")
-                return redirect('goals', child_id=child_id)
-            else:
-                messages.error(request, "Failed to add goal. Please fix the errors below.")
-
-        elif 'update_savings' in request.POST and goal_to_edit:
-            update_form=GoalUpdateForm(request.POST, instance=goal_to_edit)
-            if update_form.is_valid():
-                update_form.save()
-                messages.success(request, "Savings updated successfully.")
-                return redirect('goals', child_id=child_id)
-            else:
-                messages.error(request, "Failed to update savings. Please fix the errors below.")
+        child = children.first() 
   
-        delete_goal_id = request.POST.get("delete_goal_id") 
-       
-        if delete_goal_id:
-            goal = goals.filter(id=delete_goal_id).first()
-            if  goal:
-                goal.delete()
-                messages.success(request, "Goal deleted successfully.")
-            else:
-                messages.error(request, "Goal not found.")
-            return redirect('goals', child_id=child_id)
+        persian_today = jdatetime.date.today()
+        start_day = persian_today
+        start_week = persian_today - jdatetime.timedelta(days=persian_today.weekday())
+        start_month = persian_today.replace(day=1)
+
+        start_day_str = start_day.strftime('%Y-%m-%d')
+        start_week_str = start_week.strftime('%Y-%m-%d')
+        start_month_str = start_month.strftime('%Y-%m-%d')
+
+        daily_total = child.costs.filter(date=start_day_str, type='expense').aggregate(total=Sum('amount'))['total'] or Decimal(0)
+        weekly_total = child.costs.filter(date__gte=start_week_str, type='expense').aggregate(total=Sum('amount'))['total'] or Decimal(0)
+        monthly_total = child.costs.filter(date__gte=start_month_str, type='expense').aggregate(total=Sum('amount'))['total'] or Decimal(0)
         
-    # else:      
-    #     goal_form = goalsForm()
-    #     update_form = GoalUpdateForm(instance = goal_to_edit)
-    chart_data = [    
-        {
-            'name': goal.goal,
-            'progress': round((goal.savings / goal.goal_amount) * 100) if goal.goal_amount > 0 else 0,
-        }
-        for goal in goals
-    ]
-    for goal in goals:
-        goal.progress_percentage = round((goal.savings / goal.goal_amount) * 100) if goal.goal_amount > 0 else 0
-    print("Chart Data:", chart_data)
+        now = jdatetime.datetime.now()
+        current_month_start = now.replace(day=1)
+        prev_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
+        two_months_ago_start = (prev_month_start - timedelta(days=1)).replace(day=1)
 
-
-    context = {
-        'goal_form': goal_form, 
-        'update_form': update_form, 
-        'child': child,
-        'goal_to_edit': goal_to_edit,
-        'goals': goals,
-        'chart_data': json.dumps(chart_data),
-    }
-
-    return render(request, 'cashflow/goals.html', context)
-
-
-#.........................................................................................................................
-
-def child_dashboard(request, child_id):
-   
-   child=get_object_or_404(Child, id=child_id)
-   print(request.session.get('child_id'))
-
-   persian_today = jdatetime.date.today()
-    
-   
-
-   start_day = persian_today
-   start_week = persian_today - jdatetime.timedelta(days=persian_today.weekday())
-   start_month = persian_today.replace(day=1)
-
-   start_day_str = start_day.strftime('%Y-%m-%d')
-   start_week_str = start_week.strftime('%Y-%m-%d')
-   start_month_str = start_month.strftime('%Y-%m-%d')
-
-   daily_costs = child.costs.filter(date=start_day_str, type='expense')
-   weekly_costs = child.costs.filter(date__gte=start_week_str, type='expense')
-   monthly_costs = child.costs.filter(date__gte=start_month_str, type='expense')
-
-   daily_total = daily_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-   weekly_total = weekly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-   monthly_total = monthly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-
-   CATEGORY_TRANSLATIONS = {key: value for key, value in Cost.EXPENSE_CATEGORIES}
-
-   top_categories = (
-       Cost.objects.filter(child = child, type='expense', date__gte = start_month_str)
-       .values('cate_choices')
-       .annotate(total_spending=Sum('amount'))
-       .order_by('-total_spending')[:6]
-   )
-   total_income = (
-    Cost.objects.filter(child=child, type='income')
-    .aggregate(total_income=Sum('amount'))
-)
-
-   categories = [CATEGORY_TRANSLATIONS[item['cate_choices']] for item in top_categories]
-
-   amount = [float(item['total_spending']) for item in top_categories]
-
-   income = total_income['total_income'] if total_income['total_income'] else 0
-   recent_costs=Cost.objects.filter(child_id=child_id).order_by('-date')[:10]
-
-   top_goals = child.goals.all()[:3]
-   for goal in top_goals:
-       goal.progress_percentage = ((goal.savings/goal.goal_amount) * 100) 
-       if goal.progress_percentage == 100:
-        goal.border_radius = "10px"
-       else:
-        goal.border_radius = "0"
-
-
-   print("Categories:", categories)
-   print("Amounts:", amount)
-   print("Income:", income)
-
-
-   context = {
-       'child' : child,
-       'categories' : categories,
-       'amount' : amount,
-       'income': income,
-       'recent_costs': recent_costs,
-       'daily_total': daily_total,
-       'weekly_total': weekly_total,
-       'monthly_total': monthly_total,
-       'persian_today': persian_today.strftime('%Y-%m-%d'),
-       'top_goals': top_goals,
-   }
-
-
-   return render(request, 'cashflow/child_dashboard.html', context)
-
-
-#.........................................................................................................................
-
-def parent_dashboard(request, child_id):
-    child=get_object_or_404(Child, id=child_id)
-    parent=child.parent
-    print(request.session.get('child_id'))
-    children=parent.children.all()
-
-
-
-    persian_today = jdatetime.date.today()
-
-    # filter_options = request.GET.get('filter', 'all')
-
-    start_day = persian_today
-    start_week = persian_today - jdatetime.timedelta(days=persian_today.weekday())
-    start_month = persian_today.replace(day=1)
-
-    start_day_str = start_day.strftime('%Y-%m-%d')
-    start_week_str = start_week.strftime('%Y-%m-%d')
-    start_month_str = start_month.strftime('%Y-%m-%d')
-
-    daily_costs = child.costs.filter(date=start_day_str, type='expense')
-    weekly_costs = child.costs.filter(date__gte=start_week_str, type='expense')
-    monthly_costs = child.costs.filter(date__gte=start_month_str, type='expense')
-
-    daily_total = daily_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-    weekly_total = weekly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-    monthly_total = monthly_costs.aggregate(total=Sum('amount'))['total'] or Decimal(0)
-
-
-    now=jdatetime.datetime.now()
-
-    current_month_start=now.replace(day=1)
-    prev_month_start=(current_month_start - timedelta(days=1)).replace(day=1)
-    two_months_ago_start = (prev_month_start - timedelta(days=1)).replace(day=1)
-    
-    next_month_start = (current_month_start + jdatetime.timedelta(days=31)).replace(day=1)
-    current_month_end = next_month_start - jdatetime.timedelta(days=1)
-    current_month_end_str = current_month_end.strftime('%Y-%m-%d')
-
-    CATEGORY_TRANSLATIONS = {key: value for key, value in Cost.EXPENSE_CATEGORIES}
-
-    top_categories = (
-       Cost.objects.filter(
-           child = child, 
-           type='expense',
-           date__gte=start_month_str, 
-           date__lte=current_month_end_str,   
-           )
-       .values('cate_choices')
-       .annotate(total_spending=Sum('amount'))
-       .order_by('-total_spending')[:6]
-    )
-    total_income = (
-     Cost.objects.filter(child=child, type='income')
-    .aggregate(total_income=Sum('amount'))
-    )
-
-        # The calculation needed for the bar diagram:
-
-   
-
-    #get their names in persian:
-
-    persian_months = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
-    months = [
-        persian_months[two_months_ago_start.month - 1],
-        persian_months[prev_month_start.month - 1],
-        persian_months[current_month_start.month - 1]
-    ]
-
-    
-
-    
-    needs = Cost.objects.filter(
-        child=child,
-        date__gte=start_month_str, 
-        date__lte=current_month_end_str,
-        type='expense', 
-        cate_choices='needs'
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
-    
-    wants = Cost.objects.filter(
-        child=child, 
-        date__gte=start_month_str,
-        date__lte=current_month_end_str, 
-        type='expense', 
-        cate_choices='wants'
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
-    
-    other = Cost.objects.filter(
-        child=child, 
-        date__gte=start_month_str, 
-        date__lte=current_month_end_str,
-        type='expense', 
-        cate_choices='else'
-        ).aggregate(Sum('amount'))['amount__sum'] or 0
-
-    categories = [CATEGORY_TRANSLATIONS[item['cate_choices']] for item in top_categories] 
-
-    amount = [float(item['total_spending']) for item in top_categories] 
-
-    income = total_income['total_income'] if total_income['total_income'] else 0
-    recent_costs=Cost.objects.filter(child_id=child_id).order_by('-date')[:6]
-
-    CA_pairs = zip(categories, amount)
-    periods = ['روز', 'هفته', 'ماه', 'همه']
-
-    savings=Goals.objects.filter(child=child).aggregate(Sum('savings'))['savings__sum'] 
-    if savings:
-        savings = float(f"{savings:.1f}")
-
-
-
-
-
-
-    income_expense_data = []
-
-    for start_date in [two_months_ago_start, prev_month_start, current_month_start]:
-
-        end_date = ((start_date + timedelta(days=31)).replace(day=1))- timedelta(days=1)
-
-        start_date_str = start_date.strftime('%Y-%m-%d') 
-        end_date_str = end_date.strftime('%Y-%m-%d') 
-        print("Start date:", start_date_str, "End date:", end_date_str)
-
-        total_income = (
-            Cost.objects.filter(
-                child=child,
-                date__gte=start_date_str,
-                date__lte = end_date_str,
-                type='income',
-            ).aggregate(Sum('amount'))['amount__sum'] or 0
-        )
-
-        total_expense = (
-            Cost.objects.filter(
-                child=child,
-                date__gte = start_date_str,
-                date__lte = end_date_str,
-                type = 'expense'
-            ).aggregate(Sum('amount'))['amount__sum'] or 0
-        )
-
-        income_expense_data.append(
-           { 
-               'income': float(total_income),  
-               'expense': float(total_expense) 
+        total_income = Cost.objects.filter(child=child, type='income').aggregate(total_income=Sum('amount'))['total_income'] or 0
+        persian_months = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+        months = [
+            persian_months[two_months_ago_start.month - 1],
+            persian_months[prev_month_start.month - 1],
+            persian_months[current_month_start.month - 1]
+        ]
+        
+        total_expenses = get_expense_sum_by_cate(child)
+        needs = total_expenses['needs']
+        wants = total_expenses['wants']
+        others = total_expenses['others']
+        
+        recent_costs = Cost.objects.filter(child_id=child.id).order_by('-date')[:6]
+        recent_costs_data = [
+            {
+                'id': cost.id,
+                'description': cost.description,
+                'amount': float(cost.amount),
+                'type': cost.type,
+                'date': cost.date,  
             }
-        )
+            for cost in recent_costs
+        ]
+        savings = Goals.objects.filter(child=child).aggregate(Sum('savings'))['savings__sum']
+        savings = float(f"{savings:.1f}") if savings else 0
+        
+        income_expense_data = []
+        for start_date in [two_months_ago_start, prev_month_start, current_month_start]:
+            end_date = ((start_date + timedelta(days=31)).replace(day=1)) - timedelta(days=1)
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
 
+            total_income_period = Cost.objects.filter(child=child, date__gte=start_date_str, date__lte=end_date_str, type='income').aggregate(Sum('amount'))['amount__sum'] or 0
+            total_expense_period = Cost.objects.filter(child=child, date__gte=start_date_str, date__lte=end_date_str, type='expense').aggregate(Sum('amount'))['amount__sum'] or 0
 
-        print("mmmmmmmmm: ", months)
-        print("incomExpeneeee: ", income_expense_data)
-
-
-
-
-    context = {
-        'child': child,
-        'parent': parent,
-        'categories': categories,
-        'amount': amount,
-        'income': income,
-        'recent_costs': recent_costs,
-        'CA_pairs': CA_pairs,
-        'periods': periods,
-        'daily_total': daily_total,
-        'weekly_total': weekly_total,
-        'monthly_total': monthly_total,
-        'persian_today': persian_today.strftime('%Y-%m-%d'),
-        'children': children,
-        'savings': savings,
-        'needs': needs,
-        'wants': wants,
-        'other':other,
-        'months': json.dumps(months),
-        'income_expense_data': json.dumps(income_expense_data), 
-    }
-    return render(request, 'cashflow/parent_dashboard.html', context)
-
-#.........................................................................................................................
-
-
-
-
-
-
-
-    
+            income_expense_data.append({
+                'income': float(total_income_period),
+                'expense': float(total_expense_period),
+            })
+        return Response({
+            'child_id': child.id,
+            'child_username': child.username,
+            'parent_id': parent.id,
+            'income': float(total_income),
+            'recent_costs': recent_costs_data,
+            'daily_total': float(daily_total),
+            'weekly_total': float(weekly_total),
+            'monthly_total': float(monthly_total),
+            'persian_today': persian_today.strftime('%Y-%m-%d'),
+            'savings': savings,
+            'needs': float(needs),
+            'wants': float(wants),
+            'others': float(others),
+            'children': [{'id': c.id, 'username': c.username} for c in children],
+            'months': months,
+            'income_expense_data': income_expense_data,
+        }, status=status.HTTP_200_OK)
+        

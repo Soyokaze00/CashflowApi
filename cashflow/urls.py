@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from .import views
 
 urlpatterns=[
@@ -27,21 +27,11 @@ urlpatterns=[
     
     #Dashboards
     path('api/child/dashboard', views.ChildDashboardAPIView.as_view(), name='child-dashboard-api'),
+    path('api/parent/dashboard', views.ParentDashboardAPIView.as_view(), name='parent-dashboard-api'),
     
     #Education
     path('api/education', views.EducationAPIView.as_view(), name='education-api'),
     
-    
-    
-    
-    
-    path("", views.landing, name="landing"),
-    path("child/dashboard/<int:child_id>/", views.child_dashboard, name="child_dashboard"),
-    path("parent/dashboard/<int:child_id>/", views.parent_dashboard, name="parent_dashboard"),
-    path("goals/<int:child_id>/", views.goals, name="goals" ),
-    path('education/<int:child_id>/', views.education, name='education'),
-    path('api-auth/', include('rest_framework.urls')),
-
 ]
 
 

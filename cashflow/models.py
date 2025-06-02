@@ -53,11 +53,10 @@ def get_persian_date():
 
 class Cost(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=3 )
-
-    
     date = models.CharField(max_length=10, default=get_persian_date)
     description = models.CharField(max_length=200, blank=False, null=False)
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='costs')
+    
     MONEY_CHOICES =[
         ('expense', 'برآمد'),
         ('income', 'درآمد')
