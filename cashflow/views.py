@@ -478,6 +478,7 @@ class EducationAPIView(APIView):
         
         total_expenses = get_expense_sum_by_cate(child)
         
+        #The actual amount spent in every category in the current month
         needs = total_expenses['needs']
         wants = total_expenses['wants']
         others = total_expenses['others']
@@ -489,6 +490,7 @@ class EducationAPIView(APIView):
             date__gte = start_month_str
         ).aggregate(Sum('amount'))['amount__sum'] or 0
         
+        #The supposed amount for every category that the child should spend
         supposed_needs_amount = (Decimal(income) * Decimal(50)) / Decimal(100)
         supposed_wants_amount = (Decimal(income) * Decimal(30)) / Decimal(100)
         supposed_others_amount = (Decimal(income) * Decimal(20)) / Decimal(100)
@@ -498,20 +500,15 @@ class EducationAPIView(APIView):
             wants_percent = round((wants / supposed_wants_amount) * 100) if supposed_wants_amount > 0 else 0
             others_percent = round((others / supposed_wants_amount) * 100) if income > 0 else 0
         else:
-            total_sum = supposed_needs_amount + supposed_wants_amount + supposed_others_amount
-            if total_sum > 0: 
-                needs_percent = round((needs / total_sum) * 100, 0)
-                wants_percent = round((wants / total_sum) * 100, 0)
-                others_percent = round((others / total_sum) * 100, 0)
-            else:
-                needs_percent = 0
-                wants_percent = 0
-                others_percent = 0
+            needs_percent = 0
+            wants_percent = 0
+            others_percent = 0
         
         print("needs_percent", needs_percent)
         print("wants_percent", wants_percent)
         print("others_percent", others_percent)
         
+        #the difference between the supposed amount and the actual amount spent for every category
         needs_difference = abs(needs - supposed_needs_amount)
         wants_difference = abs(wants - supposed_wants_amount)
         others_difference = abs(others - supposed_others_amount)
