@@ -494,20 +494,23 @@ class EducationAPIView(APIView):
         supposed_others_amount = (Decimal(income) * Decimal(20)) / Decimal(100)
         
         if(income>0):
-            actual_needs_perce = round((needs / income) * 100) if income > 0 else 0
-            actual_wants_perce = round((wants / income) * 100) if income > 0 else 0
-            actual_others_perce = round((others / income) * 100) if income > 0 else 0
+            needs_percent = round((needs / supposed_needs_amount) * 100) if supposed_needs_amount > 0 else 0
+            wants_percent = round((wants / supposed_wants_amount) * 100) if supposed_wants_amount > 0 else 0
+            others_percent = round((others / supposed_wants_amount) * 100) if income > 0 else 0
         else:
-            total_sum = needs + wants + others
+            total_sum = supposed_needs_amount + supposed_wants_amount + supposed_others_amount
             if total_sum > 0: 
-                actual_needs_perce = round((needs / total_sum) * 100, 0)
-                actual_wants_perce = round((wants / total_sum) * 100, 0)
-                actual_others_perce = round((others / total_sum) * 100, 0)
+                needs_percent = round((needs / total_sum) * 100, 0)
+                wants_percent = round((wants / total_sum) * 100, 0)
+                others_percent = round((others / total_sum) * 100, 0)
             else:
-                actual_needs_perce = 0
-                actual_wants_perce = 0
-                actual_others_perce = 0
-                
+                needs_percent = 0
+                wants_percent = 0
+                others_percent = 0
+        
+        print("needs_percent", needs_percent)
+        print("wants_percent", wants_percent)
+        print("others_percent", others_percent)
         
         needs_difference = abs(needs - supposed_needs_amount)
         wants_difference = abs(wants - supposed_wants_amount)
@@ -522,9 +525,9 @@ class EducationAPIView(APIView):
             'supposed_needs_amount': float(supposed_needs_amount),
             'supposed_wants_amount': float(supposed_wants_amount),
             'supposed_other_amount': float(supposed_others_amount),
-            'actual_needs_perce': actual_needs_perce,
-            'actual_wants_perce': actual_wants_perce,
-            'actual_other_perce': actual_others_perce,
+            'needs_percent': needs_percent,
+            'wants_percent': wants_percent,
+            'others_percent': others_percent,
             'needs_difference': float(needs_difference),
             'wants_difference': float(wants_difference),
             'others_difference': float(others_difference),
