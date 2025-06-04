@@ -521,7 +521,7 @@ class EducationAPIView(APIView):
             'others': float(others),
             'supposed_needs_amount': float(supposed_needs_amount),
             'supposed_wants_amount': float(supposed_wants_amount),
-            'supposed_other_amount': float(supposed_others_amount),
+            'supposed_others_amount': float(supposed_others_amount),
             'needs_percent': needs_percent,
             'wants_percent': wants_percent,
             'others_percent': others_percent,
