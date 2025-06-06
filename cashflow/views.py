@@ -536,14 +536,7 @@ class ParentDashboardAPIView(APIView):
     authentication_classes = ()
     permission_classes = ()
     
-    def get(self, request):
-        parent = get_parent_from_token(request)
-        children = parent.children.all()
-        if not children:
-            return Response({"detail": "کودکی برای این والد ثبت نشده است."}, status=404)
-
-        child = children.first() 
-  
+    def get_child_data(self, parent, child):
         persian_today = jdatetime.date.today()
         start_day = persian_today
         start_week = persian_today - jdatetime.timedelta(days=persian_today.weekday())
@@ -602,7 +595,8 @@ class ParentDashboardAPIView(APIView):
                 'income': float(total_income_period),
                 'expense': float(total_expense_period),
             })
-        return Response({
+        children = parent.children.all()
+        return{
             'child_id': child.id,
             'child_username': child.username,
             'parent_id': parent.id,
@@ -619,5 +613,29 @@ class ParentDashboardAPIView(APIView):
             'children': [{'id': c.id, 'username': c.username} for c in children],
             'months': months,
             'income_expense_data': income_expense_data,
-        }, status=status.HTTP_200_OK)
+        }
+    
+    def get(self, request):
+        parent = get_parent_from_token(request)
+        children = parent.children.all()
+        if not children:
+            return Response({"detail": "کودکی برای این والد ثبت نشده است."}, status=404)
+
+        child = children.first() 
+        data = self.get_child_data(parent, child)
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        parent = get_parent_from_token(request)
+        children = parent.children.all()
         
+        child_id = request.data.get('child_id')
+        if not child_id:
+            return Response({"detail": "شناسه کودک ارسال نشده است."}, status=400) 
+        try:
+            child = children.get(id=child_id)
+        except Child.DoesNotExist:
+            return Response({"detail": "کودک متعلق به این والد نیست."}, status=403)
+        data = self.get_child_data(parent, child)
+        return Response(data, status=status.HTTP_200_OK)
+            
