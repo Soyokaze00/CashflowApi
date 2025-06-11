@@ -12,13 +12,14 @@ urlpatterns=[
     
     
     # Child flows
-    path('api/child/signup/email/', views.ChildEmailVerifyView.as_view(),    name='child-email-verify'),
+    path('api/child/signup/email/', views.ChildEmailVerifyView.as_view(), name='child-email-verify'),
     path('api/child/signup/verify-code/', views.ChildVerificationCodeView.as_view(), name='child-signup-verify-code'),
-    path('api/child/signup/confirm/', views.ChildSignupView.as_view(),  name='child-signup-confirm'),
+    path('api/child/signup/confirm/', views.ChildSignupView.as_view(), name='child-signup-confirm'),
     path('api/child/login/', views.ChildLoginView.as_view(), name='child-login'),
     
     #Cost & Detail
     path('api/costs', views.CostView.as_view(), name='child-costs'),
+    path('api/costs/<int:pk>/', views.CostDeleteUpdateAPIView().as_view(), name='cost-delete-update'),
     path('api/details', views.DetailsView.as_view(), name='child-details'),
     
     #Goal

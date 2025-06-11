@@ -245,6 +245,18 @@ class CostView(generics.ListCreateAPIView):
 
         serializer.save()
 
+#CostDeleteUpdateAPIView
+
+class CostDeleteUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CostSerializer
+    permission_classes = ()
+    authentication_classes = ()
+    
+    def get_object(self):
+        child = get_child_from_token(self.request)
+        cost = get_object_or_404(Cost, id=self.kwargs['pk'], child=child)
+        return cost
+    
 
 ### Getting the Expense sum by category(needs, wants, others)
 def get_expense_sum_by_cate(child):

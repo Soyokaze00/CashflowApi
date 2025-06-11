@@ -160,9 +160,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS=[
-    BASE_DIR / "cashflow" / "static",
+    BASE_DIR / "cashflow",
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 # print(BASE_DIR / "static")
 # Default primary key field type
@@ -188,8 +188,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-CSRF_COOKIE_HTTPONLY = True  # Recommended for security
-
+CSRF_COOKIE_HTTPONLY = True 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
