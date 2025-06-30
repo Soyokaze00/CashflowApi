@@ -137,6 +137,7 @@ class ParentLoginView(generics.GenericAPIView):
             {
                 "message": "ورود با موفقیت انجام شد.",
                 "parent_id": parent.id,
+                'username': parent.username,
                 "token": token,
                 "email": parent.email,
                 "username": parent.username
@@ -418,7 +419,7 @@ class GoalDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         return goal   
     
     
-#Child_DashboardAPIView
+#ChildDashboardAPIView
 class ChildDashboardAPIView(APIView):
     authentication_classes = ()
     permission_classes = ()
@@ -463,6 +464,7 @@ class ChildDashboardAPIView(APIView):
             })
             
         return Response({
+            'username': child.username,
             'persian_today': persian_today.strftime('%Y-%m-%d'),
             'needs': needs,
             'wants': wants,
@@ -527,6 +529,7 @@ class EducationAPIView(APIView):
         
         return Response({
             'child_id': child.id,
+            'username': child.username,
             'income': float(income),
             'needs': float(needs),
             'wants': float(wants),
@@ -612,6 +615,7 @@ class ParentDashboardAPIView(APIView):
             'child_id': child.id,
             'child_username': child.username,
             'parent_id': parent.id,
+            'parent_username': parent.username,
             'income': float(total_income),
             'recent_costs': recent_costs_data,
             'daily_total': float(daily_total),
